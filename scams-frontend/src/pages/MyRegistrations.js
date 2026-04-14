@@ -22,16 +22,34 @@ export default function MyRegistrations() {
     catch (e) { flash('❌ ' + e.message); }
   };
 
-  if (loading) return <div className="loading">Loading your registrations…</div>;
-
   const upcoming = regs.filter(r => r.activity && new Date(r.activity.date) >= new Date());
   const past = regs.filter(r => r.activity && new Date(r.activity.date) < new Date());
+
+  if (loading) return <div className="loading">Loading your registrations…</div>;
 
   return (
     <div className="page">
       <div className="page-header">
         <h1>My Registrations</h1>
-        <p>You are registered for <strong>{regs.length}</strong> activit{regs.length !== 1 ? 'ies' : 'y'}.</p>
+        <p>Track your upcoming and past activity registrations.</p>
+      </div>
+
+      <div className="grid-3 mb-4">
+        <div className="stat-card stat-primary">
+          <div className="stat-icon">🎫</div>
+          <div className="stat-value">{regs.length}</div>
+          <div className="stat-label">Total Registered</div>
+        </div>
+        <div className="stat-card stat-success">
+          <div className="stat-icon">🗓</div>
+          <div className="stat-value">{upcoming.length}</div>
+          <div className="stat-label">Upcoming</div>
+        </div>
+        <div className="stat-card stat-warning">
+          <div className="stat-icon">⏮</div>
+          <div className="stat-value">{past.length}</div>
+          <div className="stat-label">Past</div>
+        </div>
       </div>
 
       {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}

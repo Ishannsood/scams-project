@@ -4,18 +4,23 @@ import { api } from '../api';
 
 export default function AttendanceHistory() {
   const [history, setHistory] = useState([]);
+  const [totalRegistered, setTotalRegistered] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.myHistory().then(data => {
-      setHistory(data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    Promise.all([api.myHistory(), api.getMyRegistrations()])
+      .then(([hist, regs]) => {
+        setHistory(hist);
+        setTotalRegistered(regs.length);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="loading">Loading attendance history…</div>;
 
   const attended = history.length;
+  const rate = totalRegistered > 0 ? Math.round((attended / totalRegistered) * 100) : 0;
 
   return (
     <div className="page">
@@ -25,10 +30,20 @@ export default function AttendanceHistory() {
       </div>
 
       <div className="grid-3 mb-4">
+        <div className="stat-card stat-primary">
+          <div className="stat-icon">🎫</div>
+          <div className="stat-value">{totalRegistered}</div>
+          <div className="stat-label">Registered For</div>
+        </div>
         <div className="stat-card stat-success">
           <div className="stat-icon">🏆</div>
           <div className="stat-value">{attended}</div>
           <div className="stat-label">Events Attended</div>
+        </div>
+        <div className="stat-card stat-info">
+          <div className="stat-icon">📊</div>
+          <div className="stat-value">{rate}%</div>
+          <div className="stat-label">Attendance Rate</div>
         </div>
       </div>
 
