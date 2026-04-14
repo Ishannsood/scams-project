@@ -31,6 +31,9 @@ export default function Login() {
           <div className="auth-logo-badge">🎓 CampusSync</div>
           <h1>SCAMS</h1>
           <p>Student Club Activity Management System</p>
+          <p style={{ fontSize: '11px', color: 'var(--gray-400)', marginTop: '6px' }}>
+            Ishan Sood · Rabin Kunnananickal Binu
+          </p>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
