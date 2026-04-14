@@ -2,6 +2,17 @@ const router = require('express').Router();
 const { attendance, activities, registrations, users, uuidv4 } = require('../data/store');
 const { authenticate, authorize } = require('../middleware/auth');
 
+// GET /api/attendance/my/history — member's own attendance history
+// MUST be defined before /:activityId to prevent 'my' being matched as a param
+router.get('/my/history', authenticate, (req, res) => {
+  const myAttendance = attendance.filter(a => a.userId === req.user.id);
+  const enriched = myAttendance.map(a => {
+    const activity = activities.find(act => act.id === a.activityId);
+    return { ...a, activity };
+  });
+  res.json(enriched);
+});
+
 // GET /api/attendance/:activityId — get attendance for an activity (exec/advisor)
 router.get('/:activityId', authenticate, authorize('executive', 'advisor'), (req, res) => {
   const { activityId } = req.params;
@@ -53,16 +64,6 @@ router.post('/:activityId/mark', authenticate, authorize('executive', 'advisor')
     });
   }
   res.json({ message: 'Attendance marked' });
-});
-
-// GET /api/attendance/my/history — member's own attendance history
-router.get('/my/history', authenticate, (req, res) => {
-  const myAttendance = attendance.filter(a => a.userId === req.user.id);
-  const enriched = myAttendance.map(a => {
-    const activity = activities.find(act => act.id === a.activityId);
-    return { ...a, activity };
-  });
-  res.json(enriched);
 });
 
 module.exports = router;

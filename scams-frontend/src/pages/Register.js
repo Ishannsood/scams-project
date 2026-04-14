@@ -28,8 +28,9 @@ export default function Register() {
     <div className="auth-page">
       <div className="auth-box">
         <div className="auth-logo">
+          <div className="auth-logo-badge">🎓 CampusSync</div>
           <h1>SCAMS</h1>
-          <p>Create your account</p>
+          <p>Create your account to get started</p>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
@@ -41,21 +42,38 @@ export default function Register() {
           </div>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" value={form.email} onChange={set('email')} placeholder="you@example.com" required />
+            <input type="email" value={form.email} onChange={set('email')} placeholder="you@college.edu" required />
           </div>
           <div className="form-group">
             <label>Password</label>
             <input type="password" value={form.password} onChange={set('password')} placeholder="At least 6 characters" required minLength={6} />
           </div>
           <div className="form-group">
-            <label>Role</label>
-            <select value={form.role} onChange={set('role')}>
-              <option value="member">Member</option>
-              <option value="executive">Executive</option>
-              <option value="advisor">Advisor</option>
-            </select>
+            <label>I am a…</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {[
+                { value: 'member',    icon: '👤', label: 'Member',    desc: 'Join & attend' },
+                { value: 'executive', icon: '⚙️', label: 'Executive', desc: 'Manage events' },
+                { value: 'advisor',   icon: '🎓', label: 'Advisor',   desc: 'Oversee club' },
+              ].map(r => (
+                <div
+                  key={r.value}
+                  onClick={() => setForm({ ...form, role: r.value })}
+                  style={{
+                    padding: '10px 6px', borderRadius: 8, textAlign: 'center', cursor: 'pointer',
+                    border: `2px solid ${form.role === r.value ? 'var(--primary)' : 'var(--gray-200)'}`,
+                    background: form.role === r.value ? 'var(--primary-light)' : '#fff',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <div style={{ fontSize: '1.3rem', marginBottom: 4 }}>{r.icon}</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: form.role === r.value ? 'var(--primary)' : 'var(--gray-800)' }}>{r.label}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--gray-500)', marginTop: 2 }}>{r.desc}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <button className="btn btn-primary btn-lg" style={{width:'100%'}} disabled={loading}>
+          <button className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={loading}>
             {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>

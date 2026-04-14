@@ -38,4 +38,9 @@ export const api = {
   // Reports
   getSummary: () => fetch(`${BASE}/reports/summary`, { headers: headers() }).then(handle),
   getMembers: () => fetch(`${BASE}/reports/members`, { headers: headers() }).then(handle),
+
+  // Announcements
+  getAnnouncements:   ()         => fetch(`${BASE}/announcements`,      { headers: headers() }).then(handle),
+  createAnnouncement: (body)     => fetch(`${BASE}/announcements`,      { method: 'POST',   headers: headers(), body: JSON.stringify(body) }).then(handle),
+  deleteAnnouncement: (id)       => fetch(`${BASE}/announcements/${id}`, { method: 'DELETE', headers: headers() }).then(handle),
 };

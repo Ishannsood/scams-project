@@ -5,10 +5,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Activities from './pages/Activities';
+import ActivityDetail from './pages/ActivityDetail';
 import MyRegistrations from './pages/MyRegistrations';
+import AttendanceHistory from './pages/AttendanceHistory';
 import Manage from './pages/Manage';
 import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
+import Announcements from './pages/Announcements';
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -38,8 +41,17 @@ function AppRoutes() {
       <Route path="/activities" element={
         <ProtectedRoute><AppLayout><Activities /></AppLayout></ProtectedRoute>
       } />
+      <Route path="/activities/:id" element={
+        <ProtectedRoute><AppLayout><ActivityDetail /></AppLayout></ProtectedRoute>
+      } />
+      <Route path="/announcements" element={
+        <ProtectedRoute><AppLayout><Announcements /></AppLayout></ProtectedRoute>
+      } />
       <Route path="/my-registrations" element={
         <ProtectedRoute roles={['member']}><AppLayout><MyRegistrations /></AppLayout></ProtectedRoute>
+      } />
+      <Route path="/attendance-history" element={
+        <ProtectedRoute roles={['member']}><AppLayout><AttendanceHistory /></AppLayout></ProtectedRoute>
       } />
       <Route path="/manage" element={
         <ProtectedRoute roles={['executive', 'advisor']}><AppLayout><Manage /></AppLayout></ProtectedRoute>

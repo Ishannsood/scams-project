@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api';
 
 export default function MyRegistrations() {
@@ -30,7 +31,7 @@ export default function MyRegistrations() {
     <div className="page">
       <div className="page-header">
         <h1>My Registrations</h1>
-        <p>You are registered for {regs.length} activit{regs.length !== 1 ? 'ies' : 'y'}.</p>
+        <p>You are registered for <strong>{regs.length}</strong> activit{regs.length !== 1 ? 'ies' : 'y'}.</p>
       </div>
 
       {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
@@ -45,12 +46,10 @@ export default function MyRegistrations() {
         <>
           {upcoming.length > 0 && (
             <>
-              <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '14px', color: 'var(--gray-700)' }}>
-                Upcoming ({upcoming.length})
-              </h2>
+              <div className="section-label">Upcoming ({upcoming.length})</div>
               <div className="grid-2 mb-4">
                 {upcoming.map(r => (
-                  <div className="activity-card" key={r.id}>
+                  <div className="activity-card status-open" key={r.id}>
                     <div className="flex-between">
                       <h3>{r.activity.title}</h3>
                       <span className="badge badge-success">Upcoming</span>
@@ -64,6 +63,7 @@ export default function MyRegistrations() {
                       Registered on {new Date(r.registeredAt).toLocaleDateString()}
                     </p>
                     <div className="actions">
+                      <Link to={`/activities/${r.activityId}`} className="btn btn-outline btn-sm">Details</Link>
                       <button className="btn btn-ghost btn-sm" onClick={() => handleUnregister(r.activityId)}>
                         Unregister
                       </button>
@@ -76,12 +76,10 @@ export default function MyRegistrations() {
 
           {past.length > 0 && (
             <>
-              <h2 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '14px', color: 'var(--gray-700)' }}>
-                Past ({past.length})
-              </h2>
+              <div className="section-label">Past ({past.length})</div>
               <div className="grid-2">
                 {past.map(r => (
-                  <div className="activity-card" key={r.id} style={{ opacity: 0.75 }}>
+                  <div className="activity-card status-past" key={r.id}>
                     <div className="flex-between">
                       <h3>{r.activity.title}</h3>
                       <span className="badge badge-warning">Past</span>

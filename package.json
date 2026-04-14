@@ -1,0 +1,14 @@
+{
+  "name": "scams-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix scams-backend && npm install --prefix scams-frontend",
+    "start": "concurrently --names \"API,WEB\" --prefix-colors \"blue,green\" \"npm run dev --prefix scams-backend\" \"npm start --prefix scams-frontend\"",
+    "backend": "npm run dev --prefix scams-backend",
+    "frontend": "npm start --prefix scams-frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

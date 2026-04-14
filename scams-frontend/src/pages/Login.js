@@ -28,6 +28,7 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-box">
         <div className="auth-logo">
+          <div className="auth-logo-badge">🎓 CampusSync</div>
           <h1>SCAMS</h1>
           <p>Student Club Activity Management System</p>
         </div>
@@ -49,15 +50,27 @@ export default function Login() {
         </form>
 
         <div className="divider" />
-        <p style={{fontSize:'12px', color:'var(--gray-600)', marginBottom:'8px', fontWeight:600}}>Quick Login (Demo Accounts)</p>
-        <div style={{display:'flex', flexDirection:'column', gap:'6px'}}>
+        <p style={{ fontSize: '11px', color: 'var(--gray-500)', marginBottom: '8px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Demo Accounts
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {[
-            { label: '👤 Member',    email: 'member@test.com'  },
-            { label: '⚙️ Executive', email: 'exec@test.com'    },
-            { label: '🎓 Advisor',   email: 'advisor@test.com' },
+            { label: 'Member',    icon: '👤', email: 'member@test.com',  color: '#1d4ed8', bg: '#dbeafe' },
+            { label: 'Executive', icon: '⚙️', email: 'exec@test.com',    color: '#7c3aed', bg: '#f3e8ff' },
+            { label: 'Advisor',   icon: '🎓', email: 'advisor@test.com', color: '#065f46', bg: '#d1fae5' },
           ].map(a => (
-            <button key={a.email} className="btn btn-ghost btn-sm" onClick={() => fillAccount(a.email)} style={{justifyContent:'flex-start'}}>
-              {a.label} — {a.email}
+            <button
+              key={a.email}
+              onClick={() => fillAccount(a.email)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '9px 14px', borderRadius: '8px', border: `1.5px solid ${a.bg}`,
+                background: a.bg, cursor: 'pointer', transition: 'all 0.15s', width: '100%',
+              }}
+            >
+              <span style={{ fontSize: '1rem' }}>{a.icon}</span>
+              <span style={{ fontWeight: 700, fontSize: '13px', color: a.color }}>{a.label}</span>
+              <span style={{ fontSize: '12px', color: a.color, opacity: 0.7, marginLeft: 'auto' }}>{a.email}</span>
             </button>
           ))}
         </div>

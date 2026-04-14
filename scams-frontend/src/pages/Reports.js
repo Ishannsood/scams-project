@@ -1,6 +1,29 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 
+function downloadCSV(filename, rows) {
+  const content = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function RateBar({ value }) {
+  const color = value >= 70 ? 'var(--success)' : value >= 40 ? 'var(--warning)' : 'var(--danger)';
+  return (
+    <div style={{ minWidth: 80 }}>
+      <div style={{ fontSize: '12px', fontWeight: 700, color, marginBottom: 4 }}>{value}%</div>
+      <div className="cap-bar">
+        <div className="cap-bar-fill" style={{ width: `${value}%`, background: color }} />
+      </div>
+    </div>
+  );
+}
+
 export default function Reports() {
   const [summary, setSummary] = useState(null);
   const [members, setMembers] = useState([]);
@@ -13,6 +36,25 @@ export default function Reports() {
     });
   }, []);
 
+  const exportActivitiesCSV = () => {
+    const header = ['Activity', 'Date', 'Location', 'Capacity', 'Registered', 'Attended', 'Fill Rate', 'Attendance Rate'];
+    const rows = summary.activities.map(a => [
+      a.title, a.date, a.location, a.maxCapacity, a.registered, a.attended, a.fillRate, a.attendanceRate,
+    ]);
+    downloadCSV('scams-activity-report.csv', [header, ...rows]);
+  };
+
+  const exportMembersCSV = () => {
+    const header = ['Name', 'Email', 'Activities Registered', 'Activities Attended', 'Attendance Rate'];
+    const rows = members.map(m => {
+      const rate = m.activitiesRegistered > 0
+        ? Math.round((m.activitiesAttended / m.activitiesRegistered) * 100) + '%'
+        : '0%';
+      return [m.name, m.email, m.activitiesRegistered, m.activitiesAttended, rate];
+    });
+    downloadCSV('scams-member-report.csv', [header, ...rows]);
+  };
+
   if (loading) return <div className="loading">Loading reports…</div>;
 
   return (
@@ -22,38 +64,45 @@ export default function Reports() {
         <p>Overview of club activities and member participation.</p>
       </div>
 
-      {/* Overview stats */}
       <div className="grid-4 mb-4">
-        <div className="stat-card">
+        <div className="stat-card stat-primary">
+          <div className="stat-icon">📅</div>
           <div className="stat-value">{summary.overview.totalActivities}</div>
           <div className="stat-label">Activities</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stat-info">
+          <div className="stat-icon">👥</div>
           <div className="stat-value">{summary.overview.totalMembers}</div>
           <div className="stat-label">Members</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stat-success">
+          <div className="stat-icon">🎫</div>
           <div className="stat-value">{summary.overview.totalRegistrations}</div>
           <div className="stat-label">Registrations</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card stat-warning">
+          <div className="stat-icon">✅</div>
           <div className="stat-value">{summary.overview.totalAttendance}</div>
           <div className="stat-label">Attendances</div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {['activities', 'members'].map(t => (
-          <button
-            key={t}
-            className={`btn ${tab === t ? 'btn-primary' : 'btn-ghost'} btn-sm`}
-            onClick={() => setTab(t)}
-            style={{ textTransform: 'capitalize' }}
-          >
-            {t === 'activities' ? '📅 Activity Report' : '👥 Member Report'}
-          </button>
-        ))}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 4, background: 'var(--gray-100)', padding: 3, borderRadius: 8 }}>
+          {['activities', 'members'].map(t => (
+            <button
+              key={t}
+              className={`btn btn-sm ${tab === t ? 'btn-primary' : ''}`}
+              onClick={() => setTab(t)}
+              style={tab !== t ? { background: 'transparent', border: 'none', color: 'var(--gray-600)' } : {}}
+            >
+              {t === 'activities' ? '📅 Activity Report' : '👥 Member Report'}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-outline btn-sm" onClick={tab === 'activities' ? exportActivitiesCSV : exportMembersCSV}>
+          ⬇ Export CSV
+        </button>
       </div>
 
       {tab === 'activities' && (
@@ -84,16 +133,8 @@ export default function Reports() {
                     <td>{a.maxCapacity}</td>
                     <td>{a.registered}</td>
                     <td>{a.attended}</td>
-                    <td>
-                      <span className={`badge ${parseInt(a.fillRate) >= 80 ? 'badge-success' : parseInt(a.fillRate) >= 40 ? 'badge-warning' : 'badge-danger'}`}>
-                        {a.fillRate}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`badge ${parseInt(a.attendanceRate) >= 70 ? 'badge-success' : parseInt(a.attendanceRate) >= 40 ? 'badge-warning' : 'badge-danger'}`}>
-                        {a.attendanceRate}
-                      </span>
-                    </td>
+                    <td><RateBar value={parseInt(a.fillRate)} /></td>
+                    <td><RateBar value={parseInt(a.attendanceRate)} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -135,11 +176,7 @@ export default function Reports() {
                         <td style={{ color: 'var(--gray-600)' }}>{m.email}</td>
                         <td>{m.activitiesRegistered}</td>
                         <td>{m.activitiesAttended}</td>
-                        <td>
-                          <span className={`badge ${rate >= 70 ? 'badge-success' : rate >= 40 ? 'badge-warning' : 'badge-danger'}`}>
-                            {rate}%
-                          </span>
-                        </td>
+                        <td><RateBar value={rate} /></td>
                       </tr>
                     );
                   })}

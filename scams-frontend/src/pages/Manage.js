@@ -69,9 +69,12 @@ export default function Manage() {
 
       {activities.length === 0 ? (
         <div className="empty">
-          <div className="empty-icon">📝</div>
+          <span className="empty-icon">📝</span>
           <h3>No activities yet</h3>
           <p>Create your first activity to get started.</p>
+          <div style={{ marginTop: 16 }}>
+            <button className="btn btn-primary" onClick={openCreate}>➕ Create First Activity</button>
+          </div>
         </div>
       ) : (
         <div className="card" style={{ padding: 0 }}>
@@ -79,10 +82,11 @@ export default function Manage() {
             <table>
               <thead>
                 <tr>
-                  <th>Title</th>
-                  <th>Date</th>
+                  <th>Activity</th>
+                  <th>Date & Time</th>
                   <th>Location</th>
-                  <th>Registrations</th>
+                  <th>Fill</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -90,23 +94,37 @@ export default function Manage() {
                 {activities.map(a => {
                   const pct = Math.round((a.registeredCount / a.maxCapacity) * 100);
                   const isPast = new Date(a.date) < new Date();
+                  const isFull = a.registeredCount >= a.maxCapacity;
                   return (
                     <tr key={a.id}>
                       <td>
-                        <div style={{ fontWeight: 600 }}>{a.title}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--gray-400)' }}>{a.description?.slice(0, 60)}{a.description?.length > 60 ? '…' : ''}</div>
+                        <div style={{ fontWeight: 700, color: 'var(--gray-900)' }}>{a.title}</div>
+                        {a.description && (
+                          <div style={{ fontSize: '11px', color: 'var(--gray-400)', marginTop: 2 }}>
+                            {a.description.slice(0, 55)}{a.description.length > 55 ? '…' : ''}
+                          </div>
+                        )}
                       </td>
                       <td>
-                        <div>{new Date(a.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--gray-400)' }}>{a.time || 'TBD'}</div>
-                        {isPast && <span className="badge badge-warning" style={{ marginTop: 4 }}>Past</span>}
+                        <div style={{ fontWeight: 500 }}>{new Date(a.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--gray-400)' }}>{a.time || 'Time TBD'}</div>
                       </td>
-                      <td>{a.location}</td>
+                      <td style={{ color: 'var(--gray-600)' }}>{a.location}</td>
                       <td>
-                        <div style={{ fontSize: '13px' }}>{a.registeredCount} / {a.maxCapacity}</div>
-                        <div className="cap-bar" style={{ marginTop: '4px', width: '80px' }}>
-                          <div className={`cap-bar-fill${pct >= 100 ? ' full' : ''}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                        <div style={{ fontSize: '12px', fontWeight: 600, marginBottom: 4 }}>
+                          {a.registeredCount} / {a.maxCapacity}
+                          <span style={{ fontWeight: 400, color: 'var(--gray-400)', marginLeft: 4 }}>({pct}%)</span>
                         </div>
+                        <div className="cap-bar" style={{ width: 80 }}>
+                          <div className={`cap-bar-fill${isFull ? ' full' : ''}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                        </div>
+                      </td>
+                      <td>
+                        {isPast
+                          ? <span className="badge badge-warning">Past</span>
+                          : isFull
+                          ? <span className="badge badge-danger">Full</span>
+                          : <span className="badge badge-success">Open</span>}
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>

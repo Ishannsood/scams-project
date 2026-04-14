@@ -55,4 +55,16 @@ const attendance = [
   { id: 'att1', userId: 'u1', activityId: 'act1', markedAt: new Date().toISOString(), markedBy: 'u2' },
 ];
 
-module.exports = { users, activities, registrations, attendance, uuidv4 };
+// { id, title, content, pinned, createdBy, createdAt }
+const announcements = [
+  {
+    id: 'ann1',
+    title: 'Welcome to SCAMS!',
+    content: 'This is the official platform for CampusSync club activities. Register for upcoming events and stay tuned for announcements.',
+    pinned: true,
+    createdBy: 'u2',
+    createdAt: new Date().toISOString(),
+  },
+];
+
+module.exports = { users, activities, registrations, attendance, announcements, uuidv4 };
