@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { activities, users, registrations, uuidv4 } = require('../data/store');
 const { authenticate, authorize } = require('../middleware/auth');
 
-// GET /api/activities — all users
+// GET /api/activities — all authenticated users
 router.get('/', authenticate, (req, res) => {
   const enriched = activities.map(a => {
     const creator = users.find(u => u.id === a.createdBy);
@@ -28,16 +28,26 @@ router.get('/:id', authenticate, (req, res) => {
 // POST /api/activities — executive/advisor only
 router.post('/', authenticate, authorize('executive', 'advisor'), (req, res) => {
   const { title, description, date, time, location, maxCapacity } = req.body;
-  if (!title || !date) return res.status(400).json({ message: 'Title and date are required' });
+
+  if (!title || typeof title !== 'string' || title.trim().length === 0)
+    return res.status(400).json({ message: 'Title is required' });
+
+  if (!date || isNaN(new Date(date)))
+    return res.status(400).json({ message: 'A valid date is required' });
+
+  const capacity = Number(maxCapacity);
+  if (maxCapacity !== undefined && (isNaN(capacity) || capacity < 1 || capacity > 1000))
+    return res.status(400).json({ message: 'Capacity must be between 1 and 1000' });
+
   const activity = {
     id: uuidv4(),
-    title,
-    description: description || '',
+    title: title.trim(),
+    description: description?.trim() || '',
     date,
     time: time || '',
-    location: location || 'TBD',
+    location: location?.trim() || 'TBD',
     createdBy: req.user.id,
-    maxCapacity: Number(maxCapacity) || 30,
+    maxCapacity: capacity || 30,
     createdAt: new Date().toISOString(),
   };
   activities.push(activity);
@@ -48,16 +58,24 @@ router.post('/', authenticate, authorize('executive', 'advisor'), (req, res) => 
 router.put('/:id', authenticate, authorize('executive', 'advisor'), (req, res) => {
   const idx = activities.findIndex(a => a.id === req.params.id);
   if (idx === -1) return res.status(404).json({ message: 'Activity not found' });
+
   const { title, description, date, time, location, maxCapacity } = req.body;
+
+  if (date && isNaN(new Date(date)))
+    return res.status(400).json({ message: 'A valid date is required' });
+
+  if (maxCapacity !== undefined && (isNaN(Number(maxCapacity)) || Number(maxCapacity) < 1))
+    return res.status(400).json({ message: 'Capacity must be at least 1' });
+
   activities[idx] = {
     ...activities[idx],
-    title: title ?? activities[idx].title,
-    description: description ?? activities[idx].description,
-    date: date ?? activities[idx].date,
-    time: time ?? activities[idx].time,
-    location: location ?? activities[idx].location,
+    title:       title?.trim()       ?? activities[idx].title,
+    description: description?.trim() ?? activities[idx].description,
+    date:        date                ?? activities[idx].date,
+    time:        time                ?? activities[idx].time,
+    location:    location?.trim()    ?? activities[idx].location,
     maxCapacity: maxCapacity ? Number(maxCapacity) : activities[idx].maxCapacity,
-    updatedAt: new Date().toISOString(),
+    updatedAt:   new Date().toISOString(),
   };
   res.json(activities[idx]);
 });

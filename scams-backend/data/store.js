@@ -1,12 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
 
+// Passwords are hashed with bcrypt (cost factor 10). Plain text: password123
+const HASHED_PW = '$2b$10$mo7EzPazO4ygb.rQPEKuuu7K5pPw74PTiTp2fbfGsTrB3QX8GX1lm';
+
 const users = [
-  { id: 'u1', name: 'Alice Chen',      email: 'member@test.com',   password: 'password123', role: 'member'    },
-  { id: 'u2', name: 'Bob Nakamura',    email: 'exec@test.com',     password: 'password123', role: 'executive' },
-  { id: 'u3', name: 'Carol Vasquez',   email: 'advisor@test.com',  password: 'password123', role: 'advisor'   },
-  { id: 'u4', name: 'Dan Okafor',      email: 'dan@test.com',      password: 'password123', role: 'member'    },
-  { id: 'u5', name: 'Emma Kowalski',   email: 'emma@test.com',     password: 'password123', role: 'member'    },
-  { id: 'u6', name: 'James Park',      email: 'james@test.com',    password: 'password123', role: 'member'    },
+  { id: 'u1', name: 'Alice Chen',      email: 'member@test.com',   password: HASHED_PW, role: 'member'    },
+  { id: 'u2', name: 'Bob Nakamura',    email: 'exec@test.com',     password: HASHED_PW, role: 'executive' },
+  { id: 'u3', name: 'Carol Vasquez',   email: 'advisor@test.com',  password: HASHED_PW, role: 'advisor'   },
+  { id: 'u4', name: 'Dan Okafor',      email: 'dan@test.com',      password: HASHED_PW, role: 'member'    },
+  { id: 'u5', name: 'Emma Kowalski',   email: 'emma@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u6', name: 'James Park',      email: 'james@test.com',    password: HASHED_PW, role: 'member'    },
 ];
 
 const activities = [

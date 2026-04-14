@@ -1,4 +1,6 @@
-const BASE = 'https://scams-project.onrender.com/api';
+const BASE = window.location.hostname === 'localhost'
+  ? '/api'
+  : 'https://scams-project.onrender.com/api';
 
 const getToken = () => localStorage.getItem('scams_token');
 

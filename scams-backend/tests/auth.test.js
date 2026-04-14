@@ -7,11 +7,11 @@ describe('Auth Routes', () => {
     it('should register a new user and return a token', async () => {
       const res = await request(app)
         .post('/api/auth/register')
-        .send({ name: 'Test User', email: 'testuser@test.com', password: 'secret123', role: 'member' });
+        .send({ name: 'Test User', email: 'testuser_unique@test.com', password: 'secret123', role: 'member' });
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('token');
-      expect(res.body.user.email).toBe('testuser@test.com');
+      expect(res.body.user.email).toBe('testuser_unique@test.com');
       expect(res.body.user.role).toBe('member');
     });
 
@@ -33,10 +33,28 @@ describe('Auth Routes', () => {
       expect(res.body).toHaveProperty('message');
     });
 
+    it('should reject a password shorter than 6 characters', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({ name: 'Short Pass', email: 'shortpass@test.com', password: '123', role: 'member' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toMatch(/6 characters/i);
+    });
+
+    it('should reject an invalid email format', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({ name: 'Bad Email', email: 'notanemail', password: 'password123', role: 'member' });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toMatch(/valid email/i);
+    });
+
     it('should default role to member if invalid role provided', async () => {
       const res = await request(app)
         .post('/api/auth/register')
-        .send({ name: 'Role Test', email: 'roletest@test.com', password: 'pass123', role: 'superadmin' });
+        .send({ name: 'Role Test', email: 'roletest_unique@test.com', password: 'pass123', role: 'superadmin' });
 
       expect(res.statusCode).toBe(201);
       expect(res.body.user.role).toBe('member');
