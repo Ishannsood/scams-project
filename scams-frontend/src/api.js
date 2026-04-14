@@ -27,7 +27,7 @@ export const api = {
 
   // Registrations
   getMyRegistrations: ()   => fetch(`${BASE}/registrations/my`,    { headers: headers() }).then(handle),
-  register:           (id) => fetch(`${BASE}/registrations/${id}`, { method: 'POST',   headers: headers() }).then(handle),
+  joinActivity:       (id) => fetch(`${BASE}/registrations/${id}`, { method: 'POST',   headers: headers() }).then(handle),
   unregister:         (id) => fetch(`${BASE}/registrations/${id}`, { method: 'DELETE', headers: headers() }).then(handle),
 
   // Attendance

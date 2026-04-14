@@ -32,7 +32,7 @@ export default function ActivityDetail() {
   const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
 
   const handleRegister = async () => {
-    try { await api.register(id); flash('✅ Registered successfully!'); load(); }
+    try { await api.joinActivity(id); flash('✅ Registered successfully!'); load(); }
     catch (e) { flash('❌ ' + e.message); }
   };
 
