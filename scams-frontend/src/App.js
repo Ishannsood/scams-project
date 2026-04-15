@@ -23,11 +23,37 @@ const ProtectedRoute = ({ children, roles }) => {
   return children;
 };
 
+const Footer = () => (
+  <footer style={{
+    borderTop: '1px solid var(--gray-200)',
+    background: '#fff',
+    padding: '18px 28px',
+    marginTop: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+  }}>
+    <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>
+      © 2026 <strong style={{ color: 'var(--gray-600)' }}>SCAMS</strong> — Student Club Activity Management System
+    </span>
+    <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>
+      Built by{' '}
+      <strong style={{ color: 'var(--primary)' }}>Ishan Sood</strong>
+      {' '}&{' '}
+      <strong style={{ color: 'var(--primary)' }}>Rabin Kunnananickal Binu</strong>
+      {' '}· COMP 2154
+    </span>
+  </footer>
+);
+
 const AppLayout = ({ children }) => (
-  <>
+  <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
     <Navbar />
-    {children}
-  </>
+    <div style={{ flex: 1 }}>{children}</div>
+    <Footer />
+  </div>
 );
 
 function AppRoutes() {
