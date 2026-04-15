@@ -91,22 +91,26 @@ export default function Dashboard() {
       {/* Exec / Advisor stats */}
       {isAdmin && summary && (
         <div className="grid-4 mb-4">
-          <Link to="/activities" className="stat-card stat-primary" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/activities" className="stat-card stat-primary">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">📅</div>
             <div className="stat-value">{summary.overview.totalActivities}</div>
             <div className="stat-label">Activities</div>
           </Link>
-          <Link to="/members" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/members" className="stat-card stat-info">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">👥</div>
             <div className="stat-value">{summary.overview.totalMembers}</div>
             <div className="stat-label">Members</div>
           </Link>
-          <Link to="/reports?tab=activities" className="stat-card stat-success" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/reports?tab=activities" className="stat-card stat-success">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">🎫</div>
             <div className="stat-value">{summary.overview.totalRegistrations}</div>
             <div className="stat-label">Registrations</div>
           </Link>
-          <Link to="/reports?tab=activities" className="stat-card stat-warning" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/reports?tab=activities" className="stat-card stat-warning">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">✅</div>
             <div className="stat-value">{summary.overview.totalAttendance}</div>
             <div className="stat-label">Attendances</div>
@@ -117,17 +121,20 @@ export default function Dashboard() {
       {/* Member stats */}
       {user.role === 'member' && (
         <div className="grid-3 mb-4">
-          <Link to="/activities" className="stat-card stat-primary" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/activities" className="stat-card stat-primary">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">📅</div>
             <div className="stat-value">{activities.length}</div>
             <div className="stat-label">Total Activities</div>
           </Link>
-          <Link to="/my-registrations" className="stat-card stat-success" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/my-registrations" className="stat-card stat-success">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">🎫</div>
             <div className="stat-value">{myRegs.length}</div>
             <div className="stat-label">Registered</div>
           </Link>
-          <Link to="/activities?filter=upcoming" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/activities?filter=upcoming" className="stat-card stat-info">
+            <span className="stat-arrow">↗</span>
             <div className="stat-icon">🗓</div>
             <div className="stat-value">{allUpcoming.length}</div>
             <div className="stat-label">Upcoming</div>
