@@ -4,12 +4,26 @@ const { v4: uuidv4 } = require('uuid');
 const HASHED_PW = '$2b$10$mo7EzPazO4ygb.rQPEKuuu7K5pPw74PTiTp2fbfGsTrB3QX8GX1lm';
 
 const users = [
-  { id: 'u1', name: 'Alice Chen',      email: 'member@test.com',   password: HASHED_PW, role: 'member'    },
-  { id: 'u2', name: 'Bob Nakamura',    email: 'exec@test.com',     password: HASHED_PW, role: 'executive' },
-  { id: 'u3', name: 'Carol Vasquez',   email: 'advisor@test.com',  password: HASHED_PW, role: 'advisor'   },
-  { id: 'u4', name: 'Dan Okafor',      email: 'dan@test.com',      password: HASHED_PW, role: 'member'    },
-  { id: 'u5', name: 'Emma Kowalski',   email: 'emma@test.com',     password: HASHED_PW, role: 'member'    },
-  { id: 'u6', name: 'James Park',      email: 'james@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u1',  name: 'Alice Chen',       email: 'member@test.com',   password: HASHED_PW, role: 'member'    },
+  { id: 'u2',  name: 'Bob Nakamura',     email: 'exec@test.com',     password: HASHED_PW, role: 'executive' },
+  { id: 'u3',  name: 'Carol Vasquez',    email: 'advisor@test.com',  password: HASHED_PW, role: 'advisor'   },
+  { id: 'u4',  name: 'Dan Okafor',       email: 'dan@test.com',      password: HASHED_PW, role: 'member'    },
+  { id: 'u5',  name: 'Emma Kowalski',    email: 'emma@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u6',  name: 'James Park',       email: 'james@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u7',  name: 'Fiona Tran',       email: 'fiona@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u8',  name: 'George Malik',     email: 'george@test.com',   password: HASHED_PW, role: 'member'    },
+  { id: 'u9',  name: 'Hana Osei',        email: 'hana@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u10', name: 'Ivan Reyes',       email: 'ivan@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u11', name: 'Jess Yamamoto',    email: 'jess@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u12', name: 'Kyle Brennan',     email: 'kyle@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u13', name: 'Lena Svensson',    email: 'lena@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u14', name: 'Marco Diaz',       email: 'marco@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u15', name: 'Nina Patel',       email: 'nina@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u16', name: 'Omar Hassan',      email: 'omar@test.com',     password: HASHED_PW, role: 'member'    },
+  { id: 'u17', name: 'Priya Singh',      email: 'priya@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u18', name: 'Quinn Foster',     email: 'quinn@test.com',    password: HASHED_PW, role: 'member'    },
+  { id: 'u19', name: 'Raj Kumar',        email: 'raj@test.com',      password: HASHED_PW, role: 'member'    },
+  { id: 'u20', name: 'Sara Bloom',       email: 'sara@test.com',     password: HASHED_PW, role: 'member'    },
 ];
 
 const activities = [
@@ -33,7 +47,7 @@ const activities = [
     time: '10:00',
     location: 'Main Atrium',
     createdBy: 'u2',
-    maxCapacity: 50,
+    maxCapacity: 25,
     createdAt: '2026-03-05T10:00:00.000Z',
   },
   {
@@ -66,7 +80,7 @@ const activities = [
     time: '09:00',
     location: 'Innovation Hub, Floor 2',
     createdBy: 'u2',
-    maxCapacity: 30,
+    maxCapacity: 20,
     createdAt: '2026-04-01T10:00:00.000Z',
   },
 
@@ -79,7 +93,7 @@ const activities = [
     time: '17:00',
     location: 'Student Lounge, Building C',
     createdBy: 'u2',
-    maxCapacity: 40,
+    maxCapacity: 30,
     createdAt: '2026-04-05T10:00:00.000Z',
   },
   {
@@ -90,7 +104,7 @@ const activities = [
     time: '11:00',
     location: 'Main Gymnasium',
     createdBy: 'u2',
-    maxCapacity: 60,
+    maxCapacity: 30,
     createdAt: '2026-04-08T10:00:00.000Z',
   },
   {
@@ -112,89 +126,256 @@ const activities = [
     time: '13:00',
     location: 'Lecture Hall A',
     createdBy: 'u3',
-    maxCapacity: 35,
+    maxCapacity: 25,
     createdAt: '2026-04-10T10:00:00.000Z',
   },
 ];
 
 // { id, userId, activityId, registeredAt }
 const registrations = [
-  // act1 – React Workshop (past, 4/20 spots)
-  { id: 'reg1',  userId: 'u1', activityId: 'act1', registeredAt: '2026-03-10T08:00:00.000Z' },
-  { id: 'reg2',  userId: 'u4', activityId: 'act1', registeredAt: '2026-03-10T09:00:00.000Z' },
-  { id: 'reg3',  userId: 'u5', activityId: 'act1', registeredAt: '2026-03-11T10:00:00.000Z' },
-  { id: 'reg4',  userId: 'u6', activityId: 'act1', registeredAt: '2026-03-12T11:00:00.000Z' },
+  // act1 – React Workshop (14/20 = 70%)
+  { id: 'reg1',   userId: 'u1',  activityId: 'act1', registeredAt: '2026-03-10T08:00:00.000Z' },
+  { id: 'reg2',   userId: 'u4',  activityId: 'act1', registeredAt: '2026-03-10T09:00:00.000Z' },
+  { id: 'reg3',   userId: 'u5',  activityId: 'act1', registeredAt: '2026-03-11T10:00:00.000Z' },
+  { id: 'reg4',   userId: 'u6',  activityId: 'act1', registeredAt: '2026-03-12T11:00:00.000Z' },
+  { id: 'reg30',  userId: 'u7',  activityId: 'act1', registeredAt: '2026-03-12T12:00:00.000Z' },
+  { id: 'reg31',  userId: 'u8',  activityId: 'act1', registeredAt: '2026-03-12T13:00:00.000Z' },
+  { id: 'reg32',  userId: 'u9',  activityId: 'act1', registeredAt: '2026-03-13T08:00:00.000Z' },
+  { id: 'reg33',  userId: 'u10', activityId: 'act1', registeredAt: '2026-03-13T09:00:00.000Z' },
+  { id: 'reg34',  userId: 'u11', activityId: 'act1', registeredAt: '2026-03-13T10:00:00.000Z' },
+  { id: 'reg35',  userId: 'u12', activityId: 'act1', registeredAt: '2026-03-13T11:00:00.000Z' },
+  { id: 'reg36',  userId: 'u13', activityId: 'act1', registeredAt: '2026-03-14T08:00:00.000Z' },
+  { id: 'reg37',  userId: 'u14', activityId: 'act1', registeredAt: '2026-03-14T09:00:00.000Z' },
+  { id: 'reg38',  userId: 'u15', activityId: 'act1', registeredAt: '2026-03-14T10:00:00.000Z' },
+  { id: 'reg39',  userId: 'u16', activityId: 'act1', registeredAt: '2026-03-14T11:00:00.000Z' },
 
-  // act2 – Recruitment Drive (past, 4/50 spots)
-  { id: 'reg5',  userId: 'u1', activityId: 'act2', registeredAt: '2026-03-10T08:00:00.000Z' },
-  { id: 'reg6',  userId: 'u4', activityId: 'act2', registeredAt: '2026-03-11T09:00:00.000Z' },
-  { id: 'reg7',  userId: 'u5', activityId: 'act2', registeredAt: '2026-03-12T10:00:00.000Z' },
-  { id: 'reg8',  userId: 'u6', activityId: 'act2', registeredAt: '2026-03-13T11:00:00.000Z' },
+  // act2 – Recruitment Drive (18/25 = 72%)
+  { id: 'reg5',   userId: 'u1',  activityId: 'act2', registeredAt: '2026-03-10T08:00:00.000Z' },
+  { id: 'reg6',   userId: 'u4',  activityId: 'act2', registeredAt: '2026-03-11T09:00:00.000Z' },
+  { id: 'reg7',   userId: 'u5',  activityId: 'act2', registeredAt: '2026-03-12T10:00:00.000Z' },
+  { id: 'reg8',   userId: 'u6',  activityId: 'act2', registeredAt: '2026-03-13T11:00:00.000Z' },
+  { id: 'reg40',  userId: 'u7',  activityId: 'act2', registeredAt: '2026-03-13T12:00:00.000Z' },
+  { id: 'reg41',  userId: 'u8',  activityId: 'act2', registeredAt: '2026-03-14T08:00:00.000Z' },
+  { id: 'reg42',  userId: 'u9',  activityId: 'act2', registeredAt: '2026-03-14T09:00:00.000Z' },
+  { id: 'reg43',  userId: 'u10', activityId: 'act2', registeredAt: '2026-03-14T10:00:00.000Z' },
+  { id: 'reg44',  userId: 'u11', activityId: 'act2', registeredAt: '2026-03-14T11:00:00.000Z' },
+  { id: 'reg45',  userId: 'u12', activityId: 'act2', registeredAt: '2026-03-15T08:00:00.000Z' },
+  { id: 'reg46',  userId: 'u13', activityId: 'act2', registeredAt: '2026-03-15T09:00:00.000Z' },
+  { id: 'reg47',  userId: 'u14', activityId: 'act2', registeredAt: '2026-03-15T10:00:00.000Z' },
+  { id: 'reg48',  userId: 'u15', activityId: 'act2', registeredAt: '2026-03-15T11:00:00.000Z' },
+  { id: 'reg49',  userId: 'u16', activityId: 'act2', registeredAt: '2026-03-16T08:00:00.000Z' },
+  { id: 'reg50',  userId: 'u17', activityId: 'act2', registeredAt: '2026-03-16T09:00:00.000Z' },
+  { id: 'reg51',  userId: 'u18', activityId: 'act2', registeredAt: '2026-03-16T10:00:00.000Z' },
+  { id: 'reg52',  userId: 'u19', activityId: 'act2', registeredAt: '2026-03-16T11:00:00.000Z' },
+  { id: 'reg53',  userId: 'u20', activityId: 'act2', registeredAt: '2026-03-17T08:00:00.000Z' },
 
-  // act3 – Python Bootcamp (past, 3/15 spots)
-  { id: 'reg9',  userId: 'u1', activityId: 'act3', registeredAt: '2026-03-20T08:00:00.000Z' },
-  { id: 'reg10', userId: 'u4', activityId: 'act3', registeredAt: '2026-03-21T09:00:00.000Z' },
-  { id: 'reg11', userId: 'u5', activityId: 'act3', registeredAt: '2026-03-22T10:00:00.000Z' },
+  // act3 – Python Bootcamp (11/15 = 73%)
+  { id: 'reg9',   userId: 'u1',  activityId: 'act3', registeredAt: '2026-03-20T08:00:00.000Z' },
+  { id: 'reg10',  userId: 'u4',  activityId: 'act3', registeredAt: '2026-03-21T09:00:00.000Z' },
+  { id: 'reg11',  userId: 'u5',  activityId: 'act3', registeredAt: '2026-03-22T10:00:00.000Z' },
+  { id: 'reg54',  userId: 'u7',  activityId: 'act3', registeredAt: '2026-03-22T11:00:00.000Z' },
+  { id: 'reg55',  userId: 'u8',  activityId: 'act3', registeredAt: '2026-03-23T08:00:00.000Z' },
+  { id: 'reg56',  userId: 'u9',  activityId: 'act3', registeredAt: '2026-03-23T09:00:00.000Z' },
+  { id: 'reg57',  userId: 'u10', activityId: 'act3', registeredAt: '2026-03-23T10:00:00.000Z' },
+  { id: 'reg58',  userId: 'u11', activityId: 'act3', registeredAt: '2026-03-24T08:00:00.000Z' },
+  { id: 'reg59',  userId: 'u12', activityId: 'act3', registeredAt: '2026-03-24T09:00:00.000Z' },
+  { id: 'reg60',  userId: 'u13', activityId: 'act3', registeredAt: '2026-03-24T10:00:00.000Z' },
+  { id: 'reg61',  userId: 'u14', activityId: 'act3', registeredAt: '2026-03-25T08:00:00.000Z' },
 
-  // act4 – Resume Workshop (past, 3/25 spots)
-  { id: 'reg12', userId: 'u1', activityId: 'act4', registeredAt: '2026-03-28T08:00:00.000Z' },
-  { id: 'reg13', userId: 'u5', activityId: 'act4', registeredAt: '2026-03-29T09:00:00.000Z' },
-  { id: 'reg14', userId: 'u6', activityId: 'act4', registeredAt: '2026-03-30T10:00:00.000Z' },
+  // act4 – Resume & LinkedIn Workshop (18/25 = 72%)
+  { id: 'reg12',  userId: 'u1',  activityId: 'act4', registeredAt: '2026-03-28T08:00:00.000Z' },
+  { id: 'reg13',  userId: 'u5',  activityId: 'act4', registeredAt: '2026-03-29T09:00:00.000Z' },
+  { id: 'reg14',  userId: 'u6',  activityId: 'act4', registeredAt: '2026-03-30T10:00:00.000Z' },
+  { id: 'reg62',  userId: 'u4',  activityId: 'act4', registeredAt: '2026-03-30T11:00:00.000Z' },
+  { id: 'reg63',  userId: 'u7',  activityId: 'act4', registeredAt: '2026-03-31T08:00:00.000Z' },
+  { id: 'reg64',  userId: 'u8',  activityId: 'act4', registeredAt: '2026-03-31T09:00:00.000Z' },
+  { id: 'reg65',  userId: 'u9',  activityId: 'act4', registeredAt: '2026-03-31T10:00:00.000Z' },
+  { id: 'reg66',  userId: 'u10', activityId: 'act4', registeredAt: '2026-04-01T08:00:00.000Z' },
+  { id: 'reg67',  userId: 'u11', activityId: 'act4', registeredAt: '2026-04-01T09:00:00.000Z' },
+  { id: 'reg68',  userId: 'u12', activityId: 'act4', registeredAt: '2026-04-01T10:00:00.000Z' },
+  { id: 'reg69',  userId: 'u13', activityId: 'act4', registeredAt: '2026-04-02T08:00:00.000Z' },
+  { id: 'reg70',  userId: 'u14', activityId: 'act4', registeredAt: '2026-04-02T09:00:00.000Z' },
+  { id: 'reg71',  userId: 'u15', activityId: 'act4', registeredAt: '2026-04-02T10:00:00.000Z' },
+  { id: 'reg72',  userId: 'u16', activityId: 'act4', registeredAt: '2026-04-03T08:00:00.000Z' },
+  { id: 'reg73',  userId: 'u17', activityId: 'act4', registeredAt: '2026-04-03T09:00:00.000Z' },
+  { id: 'reg74',  userId: 'u18', activityId: 'act4', registeredAt: '2026-04-04T08:00:00.000Z' },
+  { id: 'reg75',  userId: 'u19', activityId: 'act4', registeredAt: '2026-04-04T09:00:00.000Z' },
+  { id: 'reg76',  userId: 'u20', activityId: 'act4', registeredAt: '2026-04-05T08:00:00.000Z' },
 
-  // act5 – Hackathon Kickoff (past, 3/30 spots)
-  { id: 'reg15', userId: 'u1', activityId: 'act5', registeredAt: '2026-04-05T08:00:00.000Z' },
-  { id: 'reg16', userId: 'u4', activityId: 'act5', registeredAt: '2026-04-06T09:00:00.000Z' },
-  { id: 'reg17', userId: 'u6', activityId: 'act5', registeredAt: '2026-04-07T10:00:00.000Z' },
+  // act5 – Spring Hackathon Kickoff (14/20 = 70%)
+  { id: 'reg15',  userId: 'u1',  activityId: 'act5', registeredAt: '2026-04-05T08:00:00.000Z' },
+  { id: 'reg16',  userId: 'u4',  activityId: 'act5', registeredAt: '2026-04-06T09:00:00.000Z' },
+  { id: 'reg17',  userId: 'u6',  activityId: 'act5', registeredAt: '2026-04-07T10:00:00.000Z' },
+  { id: 'reg77',  userId: 'u7',  activityId: 'act5', registeredAt: '2026-04-07T11:00:00.000Z' },
+  { id: 'reg78',  userId: 'u8',  activityId: 'act5', registeredAt: '2026-04-08T08:00:00.000Z' },
+  { id: 'reg79',  userId: 'u9',  activityId: 'act5', registeredAt: '2026-04-08T09:00:00.000Z' },
+  { id: 'reg80',  userId: 'u10', activityId: 'act5', registeredAt: '2026-04-08T10:00:00.000Z' },
+  { id: 'reg81',  userId: 'u11', activityId: 'act5', registeredAt: '2026-04-09T08:00:00.000Z' },
+  { id: 'reg82',  userId: 'u12', activityId: 'act5', registeredAt: '2026-04-09T09:00:00.000Z' },
+  { id: 'reg83',  userId: 'u13', activityId: 'act5', registeredAt: '2026-04-09T10:00:00.000Z' },
+  { id: 'reg84',  userId: 'u14', activityId: 'act5', registeredAt: '2026-04-10T08:00:00.000Z' },
+  { id: 'reg85',  userId: 'u15', activityId: 'act5', registeredAt: '2026-04-10T09:00:00.000Z' },
+  { id: 'reg86',  userId: 'u16', activityId: 'act5', registeredAt: '2026-04-10T10:00:00.000Z' },
+  { id: 'reg87',  userId: 'u17', activityId: 'act5', registeredAt: '2026-04-11T08:00:00.000Z' },
 
-  // act6 – Spring Social Mixer (upcoming, 4/40 spots)
-  { id: 'reg18', userId: 'u1', activityId: 'act6', registeredAt: '2026-04-13T08:00:00.000Z' },
-  { id: 'reg19', userId: 'u4', activityId: 'act6', registeredAt: '2026-04-13T09:00:00.000Z' },
-  { id: 'reg20', userId: 'u5', activityId: 'act6', registeredAt: '2026-04-13T10:00:00.000Z' },
-  { id: 'reg21', userId: 'u6', activityId: 'act6', registeredAt: '2026-04-13T11:00:00.000Z' },
+  // act6 – Spring Social Mixer (20/30 = 67%)
+  { id: 'reg18',  userId: 'u1',  activityId: 'act6', registeredAt: '2026-04-13T08:00:00.000Z' },
+  { id: 'reg19',  userId: 'u4',  activityId: 'act6', registeredAt: '2026-04-13T09:00:00.000Z' },
+  { id: 'reg20',  userId: 'u5',  activityId: 'act6', registeredAt: '2026-04-13T10:00:00.000Z' },
+  { id: 'reg21',  userId: 'u6',  activityId: 'act6', registeredAt: '2026-04-13T11:00:00.000Z' },
+  { id: 'reg88',  userId: 'u2',  activityId: 'act6', registeredAt: '2026-04-13T12:00:00.000Z' },
+  { id: 'reg89',  userId: 'u3',  activityId: 'act6', registeredAt: '2026-04-13T13:00:00.000Z' },
+  { id: 'reg90',  userId: 'u7',  activityId: 'act6', registeredAt: '2026-04-13T14:00:00.000Z' },
+  { id: 'reg91',  userId: 'u8',  activityId: 'act6', registeredAt: '2026-04-13T15:00:00.000Z' },
+  { id: 'reg92',  userId: 'u9',  activityId: 'act6', registeredAt: '2026-04-14T08:00:00.000Z' },
+  { id: 'reg93',  userId: 'u10', activityId: 'act6', registeredAt: '2026-04-14T09:00:00.000Z' },
+  { id: 'reg94',  userId: 'u11', activityId: 'act6', registeredAt: '2026-04-14T10:00:00.000Z' },
+  { id: 'reg95',  userId: 'u12', activityId: 'act6', registeredAt: '2026-04-14T11:00:00.000Z' },
+  { id: 'reg96',  userId: 'u13', activityId: 'act6', registeredAt: '2026-04-14T12:00:00.000Z' },
+  { id: 'reg97',  userId: 'u14', activityId: 'act6', registeredAt: '2026-04-14T13:00:00.000Z' },
+  { id: 'reg98',  userId: 'u15', activityId: 'act6', registeredAt: '2026-04-14T14:00:00.000Z' },
+  { id: 'reg99',  userId: 'u16', activityId: 'act6', registeredAt: '2026-04-14T15:00:00.000Z' },
+  { id: 'reg100', userId: 'u17', activityId: 'act6', registeredAt: '2026-04-14T16:00:00.000Z' },
+  { id: 'reg101', userId: 'u18', activityId: 'act6', registeredAt: '2026-04-14T17:00:00.000Z' },
+  { id: 'reg102', userId: 'u19', activityId: 'act6', registeredAt: '2026-04-14T18:00:00.000Z' },
+  { id: 'reg103', userId: 'u20', activityId: 'act6', registeredAt: '2026-04-14T19:00:00.000Z' },
 
-  // act7 – Career Fair (upcoming, 2/60 spots)
-  { id: 'reg22', userId: 'u1', activityId: 'act7', registeredAt: '2026-04-13T08:00:00.000Z' },
-  { id: 'reg23', userId: 'u5', activityId: 'act7', registeredAt: '2026-04-13T10:00:00.000Z' },
+  // act7 – Industry Career Fair (18/30 = 60%)
+  { id: 'reg22',  userId: 'u1',  activityId: 'act7', registeredAt: '2026-04-13T08:00:00.000Z' },
+  { id: 'reg23',  userId: 'u5',  activityId: 'act7', registeredAt: '2026-04-13T10:00:00.000Z' },
+  { id: 'reg104', userId: 'u4',  activityId: 'act7', registeredAt: '2026-04-13T11:00:00.000Z' },
+  { id: 'reg105', userId: 'u6',  activityId: 'act7', registeredAt: '2026-04-13T12:00:00.000Z' },
+  { id: 'reg106', userId: 'u7',  activityId: 'act7', registeredAt: '2026-04-13T13:00:00.000Z' },
+  { id: 'reg107', userId: 'u8',  activityId: 'act7', registeredAt: '2026-04-13T14:00:00.000Z' },
+  { id: 'reg108', userId: 'u9',  activityId: 'act7', registeredAt: '2026-04-13T15:00:00.000Z' },
+  { id: 'reg109', userId: 'u10', activityId: 'act7', registeredAt: '2026-04-13T16:00:00.000Z' },
+  { id: 'reg110', userId: 'u11', activityId: 'act7', registeredAt: '2026-04-14T08:00:00.000Z' },
+  { id: 'reg111', userId: 'u12', activityId: 'act7', registeredAt: '2026-04-14T09:00:00.000Z' },
+  { id: 'reg112', userId: 'u13', activityId: 'act7', registeredAt: '2026-04-14T10:00:00.000Z' },
+  { id: 'reg113', userId: 'u14', activityId: 'act7', registeredAt: '2026-04-14T11:00:00.000Z' },
+  { id: 'reg114', userId: 'u15', activityId: 'act7', registeredAt: '2026-04-14T12:00:00.000Z' },
+  { id: 'reg115', userId: 'u16', activityId: 'act7', registeredAt: '2026-04-14T13:00:00.000Z' },
+  { id: 'reg116', userId: 'u17', activityId: 'act7', registeredAt: '2026-04-14T14:00:00.000Z' },
+  { id: 'reg117', userId: 'u18', activityId: 'act7', registeredAt: '2026-04-14T15:00:00.000Z' },
+  { id: 'reg118', userId: 'u19', activityId: 'act7', registeredAt: '2026-04-14T16:00:00.000Z' },
+  { id: 'reg119', userId: 'u20', activityId: 'act7', registeredAt: '2026-04-14T17:00:00.000Z' },
 
-  // act8 – Web Dev Crash Course (upcoming, 4/18 spots — nearly full)
-  { id: 'reg24', userId: 'u1', activityId: 'act8', registeredAt: '2026-04-13T08:00:00.000Z' },
-  { id: 'reg25', userId: 'u4', activityId: 'act8', registeredAt: '2026-04-13T09:00:00.000Z' },
-  { id: 'reg26', userId: 'u5', activityId: 'act8', registeredAt: '2026-04-13T10:00:00.000Z' },
-  { id: 'reg27', userId: 'u6', activityId: 'act8', registeredAt: '2026-04-13T11:00:00.000Z' },
+  // act8 – Web Dev Crash Course (13/18 = 72%)
+  { id: 'reg24',  userId: 'u1',  activityId: 'act8', registeredAt: '2026-04-13T08:00:00.000Z' },
+  { id: 'reg25',  userId: 'u4',  activityId: 'act8', registeredAt: '2026-04-13T09:00:00.000Z' },
+  { id: 'reg26',  userId: 'u5',  activityId: 'act8', registeredAt: '2026-04-13T10:00:00.000Z' },
+  { id: 'reg27',  userId: 'u6',  activityId: 'act8', registeredAt: '2026-04-13T11:00:00.000Z' },
+  { id: 'reg120', userId: 'u7',  activityId: 'act8', registeredAt: '2026-04-13T12:00:00.000Z' },
+  { id: 'reg121', userId: 'u8',  activityId: 'act8', registeredAt: '2026-04-13T13:00:00.000Z' },
+  { id: 'reg122', userId: 'u9',  activityId: 'act8', registeredAt: '2026-04-14T08:00:00.000Z' },
+  { id: 'reg123', userId: 'u10', activityId: 'act8', registeredAt: '2026-04-14T09:00:00.000Z' },
+  { id: 'reg124', userId: 'u11', activityId: 'act8', registeredAt: '2026-04-14T10:00:00.000Z' },
+  { id: 'reg125', userId: 'u12', activityId: 'act8', registeredAt: '2026-04-14T11:00:00.000Z' },
+  { id: 'reg126', userId: 'u13', activityId: 'act8', registeredAt: '2026-04-14T12:00:00.000Z' },
+  { id: 'reg127', userId: 'u14', activityId: 'act8', registeredAt: '2026-04-14T13:00:00.000Z' },
+  { id: 'reg128', userId: 'u15', activityId: 'act8', registeredAt: '2026-04-14T14:00:00.000Z' },
 
-  // act9 – Leadership Summit (upcoming, 2/35 spots)
-  { id: 'reg28', userId: 'u1', activityId: 'act9', registeredAt: '2026-04-13T08:00:00.000Z' },
-  { id: 'reg29', userId: 'u4', activityId: 'act9', registeredAt: '2026-04-13T09:00:00.000Z' },
+  // act9 – Leadership & Communication Summit (17/25 = 68%)
+  { id: 'reg28',  userId: 'u1',  activityId: 'act9', registeredAt: '2026-04-13T08:00:00.000Z' },
+  { id: 'reg29',  userId: 'u4',  activityId: 'act9', registeredAt: '2026-04-13T09:00:00.000Z' },
+  { id: 'reg129', userId: 'u5',  activityId: 'act9', registeredAt: '2026-04-13T10:00:00.000Z' },
+  { id: 'reg130', userId: 'u6',  activityId: 'act9', registeredAt: '2026-04-13T11:00:00.000Z' },
+  { id: 'reg131', userId: 'u7',  activityId: 'act9', registeredAt: '2026-04-13T12:00:00.000Z' },
+  { id: 'reg132', userId: 'u8',  activityId: 'act9', registeredAt: '2026-04-13T13:00:00.000Z' },
+  { id: 'reg133', userId: 'u9',  activityId: 'act9', registeredAt: '2026-04-14T08:00:00.000Z' },
+  { id: 'reg134', userId: 'u10', activityId: 'act9', registeredAt: '2026-04-14T09:00:00.000Z' },
+  { id: 'reg135', userId: 'u11', activityId: 'act9', registeredAt: '2026-04-14T10:00:00.000Z' },
+  { id: 'reg136', userId: 'u12', activityId: 'act9', registeredAt: '2026-04-14T11:00:00.000Z' },
+  { id: 'reg137', userId: 'u13', activityId: 'act9', registeredAt: '2026-04-14T12:00:00.000Z' },
+  { id: 'reg138', userId: 'u14', activityId: 'act9', registeredAt: '2026-04-14T13:00:00.000Z' },
+  { id: 'reg139', userId: 'u15', activityId: 'act9', registeredAt: '2026-04-14T14:00:00.000Z' },
+  { id: 'reg140', userId: 'u16', activityId: 'act9', registeredAt: '2026-04-14T15:00:00.000Z' },
+  { id: 'reg141', userId: 'u17', activityId: 'act9', registeredAt: '2026-04-14T16:00:00.000Z' },
+  { id: 'reg142', userId: 'u18', activityId: 'act9', registeredAt: '2026-04-14T17:00:00.000Z' },
+  { id: 'reg143', userId: 'u19', activityId: 'act9', registeredAt: '2026-04-14T18:00:00.000Z' },
 ];
 
 // { id, userId, activityId, markedAt, markedBy }
 const attendance = [
-  // act1 – React Workshop: 3/4 attended
-  { id: 'att1', userId: 'u1', activityId: 'act1', markedAt: '2026-03-15T16:00:00.000Z', markedBy: 'u2' },
-  { id: 'att2', userId: 'u4', activityId: 'act1', markedAt: '2026-03-15T16:05:00.000Z', markedBy: 'u2' },
-  { id: 'att3', userId: 'u5', activityId: 'act1', markedAt: '2026-03-15T16:10:00.000Z', markedBy: 'u2' },
+  // act1 – React Workshop: 12/14 attended (86%)
+  { id: 'att1',  userId: 'u1',  activityId: 'act1', markedAt: '2026-03-15T16:00:00.000Z', markedBy: 'u2' },
+  { id: 'att2',  userId: 'u4',  activityId: 'act1', markedAt: '2026-03-15T16:05:00.000Z', markedBy: 'u2' },
+  { id: 'att3',  userId: 'u5',  activityId: 'act1', markedAt: '2026-03-15T16:10:00.000Z', markedBy: 'u2' },
   // u6 did not attend
+  { id: 'att14', userId: 'u7',  activityId: 'act1', markedAt: '2026-03-15T16:15:00.000Z', markedBy: 'u2' },
+  { id: 'att15', userId: 'u8',  activityId: 'act1', markedAt: '2026-03-15T16:20:00.000Z', markedBy: 'u2' },
+  { id: 'att16', userId: 'u9',  activityId: 'act1', markedAt: '2026-03-15T16:25:00.000Z', markedBy: 'u2' },
+  { id: 'att17', userId: 'u10', activityId: 'act1', markedAt: '2026-03-15T16:30:00.000Z', markedBy: 'u2' },
+  { id: 'att18', userId: 'u11', activityId: 'act1', markedAt: '2026-03-15T16:35:00.000Z', markedBy: 'u2' },
+  { id: 'att19', userId: 'u12', activityId: 'act1', markedAt: '2026-03-15T16:40:00.000Z', markedBy: 'u2' },
+  { id: 'att20', userId: 'u13', activityId: 'act1', markedAt: '2026-03-15T16:45:00.000Z', markedBy: 'u2' },
+  { id: 'att21', userId: 'u14', activityId: 'act1', markedAt: '2026-03-15T16:50:00.000Z', markedBy: 'u2' },
+  // u15, u16 did not attend
 
-  // act2 – Recruitment Drive: 4/4 attended
-  { id: 'att4', userId: 'u1', activityId: 'act2', markedAt: '2026-03-22T12:00:00.000Z', markedBy: 'u2' },
-  { id: 'att5', userId: 'u4', activityId: 'act2', markedAt: '2026-03-22T12:05:00.000Z', markedBy: 'u2' },
-  { id: 'att6', userId: 'u5', activityId: 'act2', markedAt: '2026-03-22T12:10:00.000Z', markedBy: 'u2' },
-  { id: 'att7', userId: 'u6', activityId: 'act2', markedAt: '2026-03-22T12:15:00.000Z', markedBy: 'u2' },
+  // act2 – Recruitment Drive: 16/18 attended (89%)
+  { id: 'att4',  userId: 'u1',  activityId: 'act2', markedAt: '2026-03-22T12:00:00.000Z', markedBy: 'u2' },
+  { id: 'att5',  userId: 'u4',  activityId: 'act2', markedAt: '2026-03-22T12:05:00.000Z', markedBy: 'u2' },
+  { id: 'att6',  userId: 'u5',  activityId: 'act2', markedAt: '2026-03-22T12:10:00.000Z', markedBy: 'u2' },
+  { id: 'att7',  userId: 'u6',  activityId: 'act2', markedAt: '2026-03-22T12:15:00.000Z', markedBy: 'u2' },
+  { id: 'att22', userId: 'u7',  activityId: 'act2', markedAt: '2026-03-22T12:20:00.000Z', markedBy: 'u2' },
+  { id: 'att23', userId: 'u8',  activityId: 'act2', markedAt: '2026-03-22T12:25:00.000Z', markedBy: 'u2' },
+  { id: 'att24', userId: 'u9',  activityId: 'act2', markedAt: '2026-03-22T12:30:00.000Z', markedBy: 'u2' },
+  { id: 'att25', userId: 'u10', activityId: 'act2', markedAt: '2026-03-22T12:35:00.000Z', markedBy: 'u2' },
+  { id: 'att26', userId: 'u11', activityId: 'act2', markedAt: '2026-03-22T12:40:00.000Z', markedBy: 'u2' },
+  { id: 'att27', userId: 'u12', activityId: 'act2', markedAt: '2026-03-22T12:45:00.000Z', markedBy: 'u2' },
+  { id: 'att28', userId: 'u13', activityId: 'act2', markedAt: '2026-03-22T12:50:00.000Z', markedBy: 'u2' },
+  { id: 'att29', userId: 'u14', activityId: 'act2', markedAt: '2026-03-22T12:55:00.000Z', markedBy: 'u2' },
+  { id: 'att30', userId: 'u15', activityId: 'act2', markedAt: '2026-03-22T13:00:00.000Z', markedBy: 'u2' },
+  { id: 'att31', userId: 'u16', activityId: 'act2', markedAt: '2026-03-22T13:05:00.000Z', markedBy: 'u2' },
+  { id: 'att32', userId: 'u17', activityId: 'act2', markedAt: '2026-03-22T13:10:00.000Z', markedBy: 'u2' },
+  { id: 'att33', userId: 'u18', activityId: 'act2', markedAt: '2026-03-22T13:15:00.000Z', markedBy: 'u2' },
+  // u19, u20 did not attend
 
-  // act3 – Python Bootcamp: 2/3 attended
-  { id: 'att8', userId: 'u1', activityId: 'act3', markedAt: '2026-04-02T15:00:00.000Z', markedBy: 'u2' },
-  { id: 'att9', userId: 'u4', activityId: 'act3', markedAt: '2026-04-02T15:05:00.000Z', markedBy: 'u2' },
+  // act3 – Python Bootcamp: 9/11 attended (82%)
+  { id: 'att8',  userId: 'u1',  activityId: 'act3', markedAt: '2026-04-02T15:00:00.000Z', markedBy: 'u2' },
+  { id: 'att9',  userId: 'u4',  activityId: 'act3', markedAt: '2026-04-02T15:05:00.000Z', markedBy: 'u2' },
   // u5 did not attend
+  { id: 'att34', userId: 'u7',  activityId: 'act3', markedAt: '2026-04-02T15:10:00.000Z', markedBy: 'u2' },
+  { id: 'att35', userId: 'u8',  activityId: 'act3', markedAt: '2026-04-02T15:15:00.000Z', markedBy: 'u2' },
+  { id: 'att36', userId: 'u9',  activityId: 'act3', markedAt: '2026-04-02T15:20:00.000Z', markedBy: 'u2' },
+  { id: 'att37', userId: 'u10', activityId: 'act3', markedAt: '2026-04-02T15:25:00.000Z', markedBy: 'u2' },
+  { id: 'att38', userId: 'u11', activityId: 'act3', markedAt: '2026-04-02T15:30:00.000Z', markedBy: 'u2' },
+  { id: 'att39', userId: 'u12', activityId: 'act3', markedAt: '2026-04-02T15:35:00.000Z', markedBy: 'u2' },
+  { id: 'att40', userId: 'u13', activityId: 'act3', markedAt: '2026-04-02T15:40:00.000Z', markedBy: 'u2' },
+  // u14 did not attend
 
-  // act4 – Resume Workshop: 2/3 attended
-  { id: 'att10', userId: 'u1', activityId: 'act4', markedAt: '2026-04-08T17:00:00.000Z', markedBy: 'u2' },
-  { id: 'att11', userId: 'u6', activityId: 'act4', markedAt: '2026-04-08T17:05:00.000Z', markedBy: 'u2' },
+  // act4 – Resume Workshop: 15/18 attended (83%)
+  { id: 'att10', userId: 'u1',  activityId: 'act4', markedAt: '2026-04-08T17:00:00.000Z', markedBy: 'u2' },
+  { id: 'att11', userId: 'u6',  activityId: 'act4', markedAt: '2026-04-08T17:05:00.000Z', markedBy: 'u2' },
   // u5 did not attend
+  { id: 'att41', userId: 'u4',  activityId: 'act4', markedAt: '2026-04-08T17:10:00.000Z', markedBy: 'u2' },
+  { id: 'att42', userId: 'u7',  activityId: 'act4', markedAt: '2026-04-08T17:15:00.000Z', markedBy: 'u2' },
+  { id: 'att43', userId: 'u8',  activityId: 'act4', markedAt: '2026-04-08T17:20:00.000Z', markedBy: 'u2' },
+  { id: 'att44', userId: 'u9',  activityId: 'act4', markedAt: '2026-04-08T17:25:00.000Z', markedBy: 'u2' },
+  { id: 'att45', userId: 'u10', activityId: 'act4', markedAt: '2026-04-08T17:30:00.000Z', markedBy: 'u2' },
+  { id: 'att46', userId: 'u11', activityId: 'act4', markedAt: '2026-04-08T17:35:00.000Z', markedBy: 'u2' },
+  { id: 'att47', userId: 'u12', activityId: 'act4', markedAt: '2026-04-08T17:40:00.000Z', markedBy: 'u2' },
+  { id: 'att48', userId: 'u13', activityId: 'act4', markedAt: '2026-04-08T17:45:00.000Z', markedBy: 'u2' },
+  { id: 'att49', userId: 'u14', activityId: 'act4', markedAt: '2026-04-08T17:50:00.000Z', markedBy: 'u2' },
+  { id: 'att50', userId: 'u15', activityId: 'act4', markedAt: '2026-04-08T17:55:00.000Z', markedBy: 'u2' },
+  { id: 'att51', userId: 'u16', activityId: 'act4', markedAt: '2026-04-08T18:00:00.000Z', markedBy: 'u2' },
+  { id: 'att52', userId: 'u17', activityId: 'act4', markedAt: '2026-04-08T18:05:00.000Z', markedBy: 'u2' },
+  // u18, u19, u20 did not attend
 
-  // act5 – Hackathon Kickoff: 2/3 attended
-  { id: 'att12', userId: 'u4', activityId: 'act5', markedAt: '2026-04-12T10:00:00.000Z', markedBy: 'u2' },
-  { id: 'att13', userId: 'u6', activityId: 'act5', markedAt: '2026-04-12T10:05:00.000Z', markedBy: 'u2' },
+  // act5 – Hackathon Kickoff: 12/14 attended (86%)
+  { id: 'att12', userId: 'u4',  activityId: 'act5', markedAt: '2026-04-12T10:00:00.000Z', markedBy: 'u2' },
+  { id: 'att13', userId: 'u6',  activityId: 'act5', markedAt: '2026-04-12T10:05:00.000Z', markedBy: 'u2' },
   // u1 did not attend
+  { id: 'att53', userId: 'u7',  activityId: 'act5', markedAt: '2026-04-12T10:10:00.000Z', markedBy: 'u2' },
+  { id: 'att54', userId: 'u8',  activityId: 'act5', markedAt: '2026-04-12T10:15:00.000Z', markedBy: 'u2' },
+  { id: 'att55', userId: 'u9',  activityId: 'act5', markedAt: '2026-04-12T10:20:00.000Z', markedBy: 'u2' },
+  { id: 'att56', userId: 'u10', activityId: 'act5', markedAt: '2026-04-12T10:25:00.000Z', markedBy: 'u2' },
+  { id: 'att57', userId: 'u11', activityId: 'act5', markedAt: '2026-04-12T10:30:00.000Z', markedBy: 'u2' },
+  { id: 'att58', userId: 'u12', activityId: 'act5', markedAt: '2026-04-12T10:35:00.000Z', markedBy: 'u2' },
+  { id: 'att59', userId: 'u13', activityId: 'act5', markedAt: '2026-04-12T10:40:00.000Z', markedBy: 'u2' },
+  { id: 'att60', userId: 'u14', activityId: 'act5', markedAt: '2026-04-12T10:45:00.000Z', markedBy: 'u2' },
+  { id: 'att61', userId: 'u15', activityId: 'act5', markedAt: '2026-04-12T10:50:00.000Z', markedBy: 'u2' },
+  // u16, u17 did not attend
 ];
 
 // { id, title, content, pinned, createdBy, createdAt }
