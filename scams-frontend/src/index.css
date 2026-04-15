@@ -186,6 +186,9 @@ tr:hover td { background: #fafbff; }
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+a.stat-card { display: block; }
+a.stat-card::after { content: '→'; position: absolute; bottom: 14px; right: 16px; font-size: 13px; opacity: 0; transition: opacity 0.15s, right 0.15s; color: var(--gray-400); }
+a.stat-card:hover::after { opacity: 1; right: 12px; }
 .stat-card .stat-value { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
 .stat-card .stat-label { font-size: 11px; color: var(--gray-500); margin-top: 8px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
 .stat-card .stat-icon { position: absolute; top: 14px; right: 16px; font-size: 1.5rem; opacity: 0.15; }

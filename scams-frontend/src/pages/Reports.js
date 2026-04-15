@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 
 function downloadCSV(filename, rows) {
@@ -25,10 +26,11 @@ function RateBar({ value }) {
 }
 
 export default function Reports() {
+  const [searchParams] = useSearchParams();
   const [summary, setSummary] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('activities');
+  const [tab, setTab] = useState(searchParams.get('tab') === 'members' ? 'members' : 'activities');
 
   useEffect(() => {
     Promise.all([api.getSummary(), api.getMembers()]).then(([s, m]) => {

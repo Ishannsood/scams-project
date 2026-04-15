@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 
@@ -17,8 +17,9 @@ export default function Activities() {
   const [myRegIds, setMyRegIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(searchParams.get('filter') === 'upcoming' ? 'upcoming' : 'all');
   const [sort, setSort] = useState('date-asc');
 
   const load = async () => {

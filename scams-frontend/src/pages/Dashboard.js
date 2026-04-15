@@ -79,47 +79,47 @@ export default function Dashboard() {
       {/* Exec / Advisor stats */}
       {(user.role === 'executive' || user.role === 'advisor') && summary && (
         <div className="grid-4 mb-4">
-          <div className="stat-card stat-primary">
+          <Link to="/activities" className="stat-card stat-primary" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">📅</div>
             <div className="stat-value">{summary.overview.totalActivities}</div>
             <div className="stat-label">Activities</div>
-          </div>
-          <div className="stat-card stat-info">
+          </Link>
+          <Link to="/reports?tab=members" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">👥</div>
             <div className="stat-value">{summary.overview.totalMembers}</div>
             <div className="stat-label">Members</div>
-          </div>
-          <div className="stat-card stat-success">
+          </Link>
+          <Link to="/reports?tab=activities" className="stat-card stat-success" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">🎫</div>
             <div className="stat-value">{summary.overview.totalRegistrations}</div>
             <div className="stat-label">Registrations</div>
-          </div>
-          <div className="stat-card stat-warning">
+          </Link>
+          <Link to="/reports?tab=activities" className="stat-card stat-warning" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">✅</div>
             <div className="stat-value">{summary.overview.totalAttendance}</div>
             <div className="stat-label">Attendances</div>
-          </div>
+          </Link>
         </div>
       )}
 
       {/* Member stats */}
       {user.role === 'member' && (
         <div className="grid-3 mb-4">
-          <div className="stat-card stat-primary">
+          <Link to="/activities" className="stat-card stat-primary" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">📅</div>
             <div className="stat-value">{activities.length}</div>
             <div className="stat-label">Total Activities</div>
-          </div>
-          <div className="stat-card stat-success">
+          </Link>
+          <Link to="/my-registrations" className="stat-card stat-success" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">🎫</div>
             <div className="stat-value">{myRegs.length}</div>
             <div className="stat-label">Registered</div>
-          </div>
-          <div className="stat-card stat-info">
+          </Link>
+          <Link to="/activities?filter=upcoming" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">🗓</div>
             <div className="stat-value">{allUpcoming.length}</div>
             <div className="stat-label">Upcoming</div>
-          </div>
+          </Link>
         </div>
       )}
 
