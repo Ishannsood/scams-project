@@ -84,7 +84,7 @@ export default function Dashboard() {
             <div className="stat-value">{summary.overview.totalActivities}</div>
             <div className="stat-label">Activities</div>
           </Link>
-          <Link to="/reports?tab=members" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+          <Link to="/members" className="stat-card stat-info" style={{ textDecoration: 'none', cursor: 'pointer' }}>
             <div className="stat-icon">👥</div>
             <div className="stat-value">{summary.overview.totalMembers}</div>
             <div className="stat-label">Members</div>

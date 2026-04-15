@@ -10,6 +10,7 @@ app.use('/api/activities',    require('./routes/activities'));
 app.use('/api/registrations', require('./routes/registrations'));
 app.use('/api/attendance',    require('./routes/attendance'));
 app.use('/api/reports',       require('./routes/reports'));
+app.use('/api/members',       require('./routes/members'));
 app.use('/api/announcements', require('./routes/announcements'));
 
 app.get('/', (req, res) => res.json({ message: 'SCAMS Backend Running ✅', version: '1.0.0' }));

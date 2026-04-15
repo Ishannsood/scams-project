@@ -26,6 +26,7 @@ export default function Navbar() {
         {isAdmin && (
           <>
             <NavLink to="/manage">Manage</NavLink>
+            <NavLink to="/members">Members</NavLink>
             <NavLink to="/attendance">Attendance</NavLink>
             <NavLink to="/reports">Reports</NavLink>
           </>
@@ -70,6 +71,7 @@ export default function Navbar() {
           {isAdmin && (
             <>
               <NavLink to="/manage"     onClick={close}>Manage</NavLink>
+              <NavLink to="/members"    onClick={close}>Members</NavLink>
               <NavLink to="/attendance" onClick={close}>Attendance</NavLink>
               <NavLink to="/reports"    onClick={close}>Reports</NavLink>
             </>

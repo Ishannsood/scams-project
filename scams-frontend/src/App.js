@@ -11,6 +11,7 @@ import AttendanceHistory from './pages/AttendanceHistory';
 import Manage from './pages/Manage';
 import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
+import Members from './pages/Members';
 import Announcements from './pages/Announcements';
 
 const ProtectedRoute = ({ children, roles }) => {
@@ -61,6 +62,9 @@ function AppRoutes() {
       } />
       <Route path="/reports" element={
         <ProtectedRoute roles={['executive', 'advisor']}><AppLayout><Reports /></AppLayout></ProtectedRoute>
+      } />
+      <Route path="/members" element={
+        <ProtectedRoute roles={['executive', 'advisor']}><AppLayout><Members /></AppLayout></ProtectedRoute>
       } />
 
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />

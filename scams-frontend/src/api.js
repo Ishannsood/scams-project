@@ -38,8 +38,9 @@ export const api = {
   myHistory:      ()            => fetch(`${BASE}/attendance/my/history`,    { headers: headers() }).then(handle),
 
   // Reports
-  getSummary: () => fetch(`${BASE}/reports/summary`, { headers: headers() }).then(handle),
-  getMembers: () => fetch(`${BASE}/reports/members`, { headers: headers() }).then(handle),
+  getSummary:   () => fetch(`${BASE}/reports/summary`, { headers: headers() }).then(handle),
+  getMembers:   () => fetch(`${BASE}/reports/members`, { headers: headers() }).then(handle),
+  getAllMembers: () => fetch(`${BASE}/members`,         { headers: headers() }).then(handle),
 
   // Announcements
   getAnnouncements:   ()     => fetch(`${BASE}/announcements`,       { headers: headers() }).then(handle),
