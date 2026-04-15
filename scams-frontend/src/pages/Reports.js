@@ -39,7 +39,8 @@ export default function Reports() {
   const exportActivitiesCSV = () => {
     const header = ['Activity', 'Date', 'Location', 'Capacity', 'Registered', 'Attended', 'Fill Rate', 'Attendance Rate'];
     const rows = summary.activities.map(a => [
-      a.title, a.date, a.location, a.maxCapacity, a.registered, a.attended, a.fillRate, a.attendanceRate,
+      a.title, a.date, a.location, a.maxCapacity, a.registered, a.attended, a.fillRate,
+      a.isPast ? a.attendanceRate : 'Upcoming',
     ]);
     downloadCSV('scams-activity-report.csv', [header, ...rows]);
   };
@@ -56,6 +57,10 @@ export default function Reports() {
   };
 
   if (loading) return <div className="loading">Loading reports…</div>;
+
+  const totalRegistered = members.reduce((s, m) => s + m.activitiesRegistered, 0);
+  const totalAttended   = members.reduce((s, m) => s + m.activitiesAttended, 0);
+  const overallRate     = totalRegistered > 0 ? Math.round((totalAttended / totalRegistered) * 100) : 0;
 
   return (
     <div className="page">
@@ -132,9 +137,13 @@ export default function Reports() {
                     <td>{a.location}</td>
                     <td>{a.maxCapacity}</td>
                     <td>{a.registered}</td>
-                    <td>{a.attended}</td>
+                    <td>{a.isPast ? a.attended : '—'}</td>
                     <td><RateBar value={parseInt(a.fillRate)} /></td>
-                    <td><RateBar value={parseInt(a.attendanceRate)} /></td>
+                    <td>
+                      {a.isPast
+                        ? <RateBar value={parseInt(a.attendanceRate)} />
+                        : <span className="badge badge-info" style={{ fontSize: '11px' }}>Upcoming</span>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -181,6 +190,14 @@ export default function Reports() {
                     );
                   })}
                 </tbody>
+                <tfoot>
+                  <tr style={{ background: 'var(--gray-50)', borderTop: '2px solid var(--gray-200)' }}>
+                    <td style={{ fontWeight: 700, color: 'var(--gray-800)' }} colSpan={2}>Totals</td>
+                    <td style={{ fontWeight: 700 }}>{totalRegistered}</td>
+                    <td style={{ fontWeight: 700 }}>{totalAttended}</td>
+                    <td><RateBar value={overallRate} /></td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           )}

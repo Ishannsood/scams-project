@@ -18,6 +18,7 @@ router.get('/summary', authenticate, authorize('executive', 'advisor'), (req, re
       attended: attended.length,
       attendanceRate: `${attendanceRate}%`,
       fillRate: `${Math.round((regs.length / activity.maxCapacity) * 100)}%`,
+      isPast: new Date(activity.date) < new Date(),
     };
   });
 

@@ -58,9 +58,9 @@ export default function Login() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {[
-            { label: 'Member',    icon: '👤', email: 'member@test.com',  color: '#1d4ed8', bg: '#dbeafe' },
-            { label: 'Executive', icon: '⚙️', email: 'exec@test.com',    color: '#7c3aed', bg: '#f3e8ff' },
-            { label: 'Advisor',   icon: '🎓', email: 'advisor@test.com', color: '#065f46', bg: '#d1fae5' },
+            { label: 'Member',    name: 'Alice Chen',    icon: '👤', email: 'member@test.com',  color: '#1d4ed8', bg: '#dbeafe' },
+            { label: 'Executive', name: 'Bob Nakamura',  icon: '⚙️', email: 'exec@test.com',    color: '#7c3aed', bg: '#f3e8ff' },
+            { label: 'Advisor',   name: 'Carol Vasquez', icon: '🎓', email: 'advisor@test.com', color: '#065f46', bg: '#d1fae5' },
           ].map(a => (
             <button
               key={a.email}
@@ -72,8 +72,11 @@ export default function Login() {
               }}
             >
               <span style={{ fontSize: '1rem' }}>{a.icon}</span>
-              <span style={{ fontWeight: 700, fontSize: '13px', color: a.color }}>{a.label}</span>
-              <span style={{ fontSize: '12px', color: a.color, opacity: 0.7, marginLeft: 'auto' }}>{a.email}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+                <span style={{ fontWeight: 700, fontSize: '13px', color: a.color, lineHeight: 1.2 }}>{a.name}</span>
+                <span style={{ fontSize: '11px', color: a.color, opacity: 0.65, lineHeight: 1.2 }}>{a.label}</span>
+              </div>
+              <span style={{ fontSize: '11px', color: a.color, opacity: 0.55, marginLeft: 'auto' }}>{a.email}</span>
             </button>
           ))}
         </div>

@@ -11,7 +11,9 @@ export default function AttendanceHistory() {
     Promise.all([api.myHistory(), api.getMyRegistrations()])
       .then(([hist, regs]) => {
         setHistory(hist);
-        setTotalRegistered(regs.length);
+        // Only count past registrations as the denominator — upcoming events haven't happened yet
+        const pastRegs = regs.filter(r => r.activity && new Date(r.activity.date) < new Date());
+        setTotalRegistered(pastRegs.length);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -33,7 +35,7 @@ export default function AttendanceHistory() {
         <div className="stat-card stat-primary">
           <div className="stat-icon">🎫</div>
           <div className="stat-value">{totalRegistered}</div>
-          <div className="stat-label">Registered For</div>
+          <div className="stat-label">Past Events</div>
         </div>
         <div className="stat-card stat-success">
           <div className="stat-icon">🏆</div>

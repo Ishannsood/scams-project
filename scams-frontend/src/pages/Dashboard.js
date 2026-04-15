@@ -32,7 +32,8 @@ export default function Dashboard() {
 
   if (loading) return <div className="loading">Loading dashboard…</div>;
 
-  const upcoming = activities.filter(a => new Date(a.date) >= new Date()).slice(0, 3);
+  const allUpcoming = activities.filter(a => new Date(a.date) >= new Date());
+  const upcoming = allUpcoming.slice(0, 3);
 
   const greeting = () => {
     const h = new Date().getHours();
@@ -116,7 +117,7 @@ export default function Dashboard() {
           </div>
           <div className="stat-card stat-info">
             <div className="stat-icon">🗓</div>
-            <div className="stat-value">{upcoming.length}</div>
+            <div className="stat-value">{allUpcoming.length}</div>
             <div className="stat-label">Upcoming</div>
           </div>
         </div>
