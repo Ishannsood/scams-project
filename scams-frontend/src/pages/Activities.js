@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 const FILTERS = ['all', 'upcoming', 'past'];
@@ -13,10 +14,10 @@ const SORTS = [
 
 export default function Activities() {
   const { user } = useAuth();
+  const toast = useToast();
   const [activities, setActivities] = useState([]);
   const [myRegIds, setMyRegIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState('');
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState(searchParams.get('filter') === 'upcoming' ? 'upcoming' : 'all');
@@ -34,16 +35,14 @@ export default function Activities() {
 
   useEffect(() => { load(); }, []);
 
-  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
   const handleRegister = async (id) => {
-    try { await api.joinActivity(id); flash('✅ Registered successfully!'); load(); }
-    catch (e) { flash('❌ ' + e.message); }
+    try { await api.joinActivity(id); toast('Registered successfully!'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   const handleUnregister = async (id) => {
-    try { await api.unregister(id); flash('Unregistered from activity.'); load(); }
-    catch (e) { flash('❌ ' + e.message); }
+    try { await api.unregister(id); toast('Unregistered from activity.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   const now = new Date();
@@ -115,7 +114,6 @@ export default function Activities() {
         </div>
       </div>
 
-      {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
 
       {filtered.length === 0 ? (
         <div className="empty">

@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
+import { useToast } from '../context/ToastContext';
 
 const EMPTY_FORM = { title: '', description: '', date: '', time: '', location: '', maxCapacity: 30 };
 
 export default function Manage() {
+  const toast = useToast();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState('');
-  const [error, setError] = useState('');
 
   const load = async () => {
     const data = await api.getActivities();
@@ -20,11 +20,6 @@ export default function Manage() {
   };
 
   useEffect(() => { load(); }, []);
-
-  const flash = (m, isErr = false) => {
-    if (isErr) { setError(m); setTimeout(() => setError(''), 3500); }
-    else { setMsg(m); setTimeout(() => setMsg(''), 3000); }
-  };
 
   const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
   const openEdit = (a) => {
@@ -37,17 +32,17 @@ export default function Manage() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setSaving(true);
     try {
-      if (editing) { await api.updateActivity(editing, form); flash('Activity updated!'); }
-      else { await api.createActivity(form); flash('Activity created!'); }
+      if (editing) { await api.updateActivity(editing, form); toast('Activity updated!'); }
+      else { await api.createActivity(form); toast('Activity created!'); }
       closeModal(); load();
-    } catch (err) { flash(err.message, true); }
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async (id, title) => {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    try { await api.deleteActivity(id); flash('Activity deleted.'); load(); }
-    catch (e) { flash(e.message, true); }
+    try { await api.deleteActivity(id); toast('Activity deleted.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -64,8 +59,6 @@ export default function Manage() {
         <button className="btn btn-primary" onClick={openCreate}>➕ New Activity</button>
       </div>
 
-      {msg && <div className="alert alert-success">{msg}</div>}
-      {error && <div className="alert alert-error">{error}</div>}
 
       {activities.length === 0 ? (
         <div className="empty">

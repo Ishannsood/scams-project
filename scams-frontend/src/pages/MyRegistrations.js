@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 export default function MyRegistrations() {
+  const toast = useToast();
   const [regs, setRegs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState('');
 
   const load = async () => {
     const data = await api.getMyRegistrations();
@@ -15,11 +16,9 @@ export default function MyRegistrations() {
 
   useEffect(() => { load(); }, []);
 
-  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
   const handleUnregister = async (activityId) => {
-    try { await api.unregister(activityId); flash('Unregistered successfully.'); load(); }
-    catch (e) { flash('❌ ' + e.message); }
+    try { await api.unregister(activityId); toast('Unregistered successfully.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   const upcoming = regs.filter(r => r.activity && new Date(r.activity.date) >= new Date());
@@ -52,7 +51,6 @@ export default function MyRegistrations() {
         </div>
       </div>
 
-      {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
 
       {regs.length === 0 ? (
         <div className="empty">

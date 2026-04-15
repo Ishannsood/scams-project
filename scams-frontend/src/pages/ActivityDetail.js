@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 export default function ActivityDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState('');
 
   const load = async () => {
     try {
@@ -29,16 +30,14 @@ export default function ActivityDetail() {
 
   useEffect(() => { load(); }, [id]);
 
-  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
   const handleRegister = async () => {
-    try { await api.joinActivity(id); flash('✅ Registered successfully!'); load(); }
-    catch (e) { flash('❌ ' + e.message); }
+    try { await api.joinActivity(id); toast('Registered successfully!'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   const handleUnregister = async () => {
-    try { await api.unregister(id); flash('Unregistered from activity.'); load(); }
-    catch (e) { flash('❌ ' + e.message); }
+    try { await api.unregister(id); toast('Unregistered from activity.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
   };
 
   if (loading) return <div className="loading">Loading activity…</div>;
@@ -54,7 +53,6 @@ export default function ActivityDetail() {
         <Link to="/activities" className="btn btn-ghost btn-sm">← Back to Activities</Link>
       </div>
 
-      {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
 
       <div className="card mb-4">
         {/* Title row */}

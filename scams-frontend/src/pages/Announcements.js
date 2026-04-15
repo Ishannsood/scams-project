@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 const EMPTY_FORM = { title: '', content: '', pinned: false };
 
 export default function Announcements() {
   const { user } = useAuth();
+  const toast = useToast();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState('');
 
   const isAdmin = user.role === 'executive' || user.role === 'advisor';
 
@@ -23,19 +24,17 @@ export default function Announcements() {
 
   useEffect(() => { load(); }, []);
 
-  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
       await api.createAnnouncement(form);
-      flash('✅ Announcement posted!');
+      toast('Announcement posted!');
       setForm(EMPTY_FORM);
       setShowForm(false);
       load();
     } catch (err) {
-      flash('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -45,10 +44,10 @@ export default function Announcements() {
     if (!window.confirm('Delete this announcement?')) return;
     try {
       await api.deleteAnnouncement(id);
-      flash('Announcement deleted.');
+      toast('Announcement deleted.', 'info');
       load();
     } catch (e) {
-      flash('❌ ' + e.message);
+      toast(e.message, 'error');
     }
   };
 
@@ -68,7 +67,6 @@ export default function Announcements() {
         )}
       </div>
 
-      {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
 
       {isAdmin && showForm && (
         <div className="card mb-4">

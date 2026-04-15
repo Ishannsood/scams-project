@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 export default function Attendance() {
+  const toast = useToast();
   const [activities, setActivities] = useState([]);
   const [selected, setSelected] = useState('');
   const [attendanceData, setAttendanceData] = useState(null);
   const [loadingActs, setLoadingActs] = useState(true);
   const [loadingAtt, setLoadingAtt] = useState(false);
-  const [msg, setMsg] = useState('');
 
   useEffect(() => {
     api.getActivities().then(data => { setActivities(data); setLoadingActs(false); });
@@ -29,14 +30,12 @@ export default function Attendance() {
     loadAttendance(e.target.value);
   };
 
-  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500); };
-
   const toggleAttendance = async (userId, currentlyAttended) => {
     try {
       await api.markAttendance(selected, { userId, present: !currentlyAttended });
-      flash(currentlyAttended ? 'Attendance removed.' : '✅ Attendance marked!');
+      toast(currentlyAttended ? 'Attendance removed.' : 'Attendance marked!', currentlyAttended ? 'info' : 'success');
       loadAttendance(selected);
-    } catch (e) { flash('❌ ' + e.message); }
+    } catch (e) { toast(e.message, 'error'); }
   };
 
   const markAll = async () => {
@@ -45,7 +44,7 @@ export default function Attendance() {
     for (const a of unattended) {
       await api.markAttendance(selected, { userId: a.userId, present: true });
     }
-    flash(`✅ Marked ${unattended.length} attendees!`);
+    toast(`Marked ${unattended.length} attendees present!`);
     loadAttendance(selected);
   };
 
@@ -61,7 +60,6 @@ export default function Attendance() {
         <p>Select an activity to mark attendance for registered members.</p>
       </div>
 
-      {msg && <div className={`alert ${msg.startsWith('❌') ? 'alert-error' : 'alert-success'}`}>{msg}</div>}
 
       <div className="card mb-4">
         <div className="form-group" style={{ marginBottom: 0 }}>
