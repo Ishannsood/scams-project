@@ -28,7 +28,8 @@ export const api = {
   deleteActivity:   (id)       => fetch(`${BASE}/activities/${id}`,  { method: 'DELETE', headers: headers() }).then(handle),
 
   // Registrations
-  getMyRegistrations: ()   => fetch(`${BASE}/registrations/my`,    { headers: headers() }).then(handle),
+  getMyRegistrations:  ()   => fetch(`${BASE}/registrations/my`,     { headers: headers() }).then(handle),
+  getRecentSignups:    ()   => fetch(`${BASE}/registrations/recent`,  { headers: headers() }).then(handle),
   joinActivity:       (id) => fetch(`${BASE}/registrations/${id}`, { method: 'POST',   headers: headers() }).then(handle),
   unregister:         (id) => fetch(`${BASE}/registrations/${id}`, { method: 'DELETE', headers: headers() }).then(handle),
 

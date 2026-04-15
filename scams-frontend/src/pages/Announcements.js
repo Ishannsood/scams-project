@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import ConfirmModal from '../components/ConfirmModal';
 import { api } from '../api';
 
 const EMPTY_FORM = { title: '', content: '', pinned: false };
@@ -13,6 +14,7 @@ export default function Announcements() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const isAdmin = user.role === 'executive' || user.role === 'advisor';
 
@@ -40,14 +42,16 @@ export default function Announcements() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this announcement?')) return;
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
     try {
-      await api.deleteAnnouncement(id);
+      await api.deleteAnnouncement(confirmDelete);
       toast('Announcement deleted.', 'info');
       load();
     } catch (e) {
       toast(e.message, 'error');
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
@@ -145,7 +149,7 @@ export default function Announcements() {
                     <button
                       className="btn btn-ghost btn-sm"
                       style={{ color: 'var(--danger)', borderColor: 'var(--danger-light)', flexShrink: 0 }}
-                      onClick={() => handleDelete(a.id)}
+                      onClick={() => setConfirmDelete(a.id)}
                     >
                       Delete
                     </button>
@@ -170,6 +174,16 @@ export default function Announcements() {
             );
           })}
         </div>
+      )}
+
+      {confirmDelete && (
+        <ConfirmModal
+          title="Delete Announcement"
+          message="Are you sure you want to delete this announcement? This cannot be undone."
+          confirmLabel="Delete"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmDelete(null)}
+        />
       )}
     </div>
   );

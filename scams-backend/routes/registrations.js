@@ -1,6 +1,26 @@
 const router = require('express').Router();
 const { activities, registrations, users, uuidv4 } = require('../data/store');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
+
+// GET /api/registrations/recent — last 8 sign-ups (exec/advisor only)
+router.get('/recent', authenticate, authorize('executive', 'advisor'), (req, res) => {
+  const recent = [...registrations]
+    .sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt))
+    .slice(0, 8)
+    .map(r => {
+      const user = users.find(u => u.id === r.userId);
+      const activity = activities.find(a => a.id === r.activityId);
+      return {
+        id: r.id,
+        registeredAt: r.registeredAt,
+        userName: user?.name || 'Unknown',
+        userRole: user?.role || 'member',
+        activityTitle: activity?.title || 'Unknown Activity',
+        activityId: r.activityId,
+      };
+    });
+  res.json(recent);
+});
 
 // GET /api/registrations/my — current user's registrations
 router.get('/my', authenticate, (req, res) => {

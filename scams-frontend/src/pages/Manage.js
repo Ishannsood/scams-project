@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { useToast } from '../context/ToastContext';
+import ConfirmModal from '../components/ConfirmModal';
 
 const EMPTY_FORM = { title: '', description: '', date: '', time: '', location: '', maxCapacity: 30 };
 
@@ -12,6 +13,7 @@ export default function Manage() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // { id, title }
 
   const load = async () => {
     const data = await api.getActivities();
@@ -39,10 +41,11 @@ export default function Manage() {
     finally { setSaving(false); }
   };
 
-  const handleDelete = async (id, title) => {
-    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
-    try { await api.deleteActivity(id); toast('Activity deleted.', 'info'); load(); }
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    try { await api.deleteActivity(confirmDelete.id); toast('Activity deleted.', 'info'); load(); }
     catch (e) { toast(e.message, 'error'); }
+    finally { setConfirmDelete(null); }
   };
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -122,7 +125,7 @@ export default function Manage() {
                       <td>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button className="btn btn-outline btn-sm" onClick={() => openEdit(a)}>Edit</button>
-                          <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id, a.title)}>Delete</button>
+                          <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete({ id: a.id, title: a.title })}>Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -180,6 +183,16 @@ export default function Manage() {
             </form>
           </div>
         </div>
+      )}
+
+      {confirmDelete && (
+        <ConfirmModal
+          title="Delete Activity"
+          message={`Are you sure you want to delete "${confirmDelete.title}"? This cannot be undone.`}
+          confirmLabel="Delete Activity"
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmDelete(null)}
+        />
       )}
     </div>
   );
