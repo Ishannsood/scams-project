@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/Navbar';
@@ -14,6 +14,7 @@ import Attendance from './pages/Attendance';
 import Reports from './pages/Reports';
 import Members from './pages/Members';
 import Announcements from './pages/Announcements';
+import Profile from './pages/Profile';
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -57,9 +58,10 @@ const AppLayout = ({ children }) => (
 );
 
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user }   = useAuth();
+  const location   = useLocation();
   return (
-    <Routes>
+    <Routes key={location.pathname}>
       <Route path="/login"    element={user ? <Navigate to="/dashboard" /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
 
@@ -92,6 +94,9 @@ function AppRoutes() {
       } />
       <Route path="/members" element={
         <ProtectedRoute roles={['executive', 'advisor']}><AppLayout><Members /></AppLayout></ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute><AppLayout><Profile /></AppLayout></ProtectedRoute>
       } />
 
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />

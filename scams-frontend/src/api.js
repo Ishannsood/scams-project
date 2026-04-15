@@ -17,8 +17,9 @@ const handle = async (res) => {
 
 export const api = {
   // Auth
-  login:    (body) => fetch(`${BASE}/auth/login`,    { method: 'POST', headers: headers(), body: JSON.stringify(body) }).then(handle),
-  register: (body) => fetch(`${BASE}/auth/register`, { method: 'POST', headers: headers(), body: JSON.stringify(body) }).then(handle),
+  login:         (body) => fetch(`${BASE}/auth/login`,    { method: 'POST',  headers: headers(), body: JSON.stringify(body) }).then(handle),
+  register:      (body) => fetch(`${BASE}/auth/register`, { method: 'POST',  headers: headers(), body: JSON.stringify(body) }).then(handle),
+  updateProfile: (body) => fetch(`${BASE}/auth/profile`,  { method: 'PATCH', headers: headers(), body: JSON.stringify(body) }).then(handle),
 
   // Activities
   getActivities:    ()         => fetch(`${BASE}/activities`,       { headers: headers() }).then(handle),

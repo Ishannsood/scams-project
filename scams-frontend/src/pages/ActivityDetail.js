@@ -4,14 +4,20 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
+const STATUS_THEME = {
+  open: { gradient: 'linear-gradient(135deg,#065f46 0%,#059669 55%,#34d399 100%)', badge: '#d1fae5', badgeText: '#065f46', label: 'Open' },
+  full: { gradient: 'linear-gradient(135deg,#7f1d1d 0%,#dc2626 55%,#f87171 100%)', badge: '#fee2e2', badgeText: '#7f1d1d', label: 'Full' },
+  past: { gradient: 'linear-gradient(135deg,#1e293b 0%,#334155 55%,#64748b 100%)', badge: '#f1f5f9', badgeText: '#334155', label: 'Past'  },
+};
+
 export default function ActivityDetail() {
-  const { id } = useParams();
-  const { user } = useAuth();
-  const toast = useToast();
-  const navigate = useNavigate();
-  const [activity, setActivity] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { id }     = useParams();
+  const { user }   = useAuth();
+  const toast      = useToast();
+  const navigate   = useNavigate();
+  const [activity, setActivity]     = useState(null);
+  const [isRegistered, setIsReg]    = useState(false);
+  const [loading, setLoading]       = useState(true);
 
   const load = async () => {
     try {
@@ -19,153 +25,228 @@ export default function ActivityDetail() {
       setActivity(act);
       if (user.role === 'member') {
         const regs = await api.getMyRegistrations();
-        setIsRegistered(regs.some(r => r.activityId === id));
+        setIsReg(regs.some(r => r.activityId === id));
       }
-    } catch {
-      navigate('/activities');
-    } finally {
-      setLoading(false);
-    }
+    } catch { navigate('/activities'); }
+    finally  { setLoading(false); }
   };
 
   useEffect(() => { load(); }, [id]);
 
-  const handleRegister = async () => {
-    try { await api.joinActivity(id); toast('Registered successfully!'); load(); }
+  const handleRegister   = async () => {
+    try { await api.joinActivity(id);  toast('Registered successfully!');         load(); }
     catch (e) { toast(e.message, 'error'); }
   };
-
   const handleUnregister = async () => {
-    try { await api.unregister(id); toast('Unregistered from activity.', 'info'); load(); }
+    try { await api.unregister(id);    toast('Unregistered from activity.','info'); load(); }
     catch (e) { toast(e.message, 'error'); }
   };
 
   if (loading) return <div className="loading">Loading activity…</div>;
   if (!activity) return null;
 
-  const isPast = new Date(activity.date) < new Date();
-  const isFull = activity.registeredCount >= activity.maxCapacity;
-  const pct = Math.round((activity.registeredCount / activity.maxCapacity) * 100);
+  const isPast  = new Date(activity.date) < new Date();
+  const isFull  = activity.registeredCount >= activity.maxCapacity;
+  const pct     = Math.round((activity.registeredCount / activity.maxCapacity) * 100);
+  const status  = isPast ? 'past' : isFull ? 'full' : 'open';
+  const theme   = STATUS_THEME[status];
 
   return (
     <div className="page">
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: 20 }}>
         <Link to="/activities" className="btn btn-ghost btn-sm">← Back to Activities</Link>
       </div>
 
+      {/* ── Hero header ── */}
+      <div style={{
+        background: theme.gradient,
+        borderRadius: 20, padding: '36px 36px 32px',
+        marginBottom: 20, color: '#fff', position: 'relative', overflow: 'hidden',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
+      }}>
+        {/* dot texture */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)',
+          backgroundSize: '20px 20px',
+          maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%)',
+        }} />
+        {/* glow blob */}
+        <div style={{
+          position: 'absolute', bottom: '-60%', right: '-5%',
+          width: 300, height: 300, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.07)', pointerEvents: 'none',
+        }} />
 
-      <div className="card mb-4">
-        {/* Title row */}
-        <div className="flex-between" style={{ alignItems: 'flex-start', marginBottom: 20 }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>{activity.title}</h1>
-          <span style={{ flexShrink: 0, marginLeft: 12 }}>
-            {isPast
-              ? <span className="badge badge-warning">Past</span>
-              : isFull
-              ? <span className="badge badge-danger">Full</span>
-              : <span className="badge badge-success">Open</span>}
-          </span>
-        </div>
-
-        {/* Info grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12, marginBottom: 20, padding: '16px 0', borderTop: '1px solid var(--gray-100)', borderBottom: '1px solid var(--gray-100)' }}>
-          {[
-            { label: '📅 Date', value: new Date(activity.date).toLocaleDateString('en-CA', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' }) },
-            { label: '🕐 Time', value: activity.time || 'TBD' },
-            { label: '📍 Location', value: activity.location },
-            { label: '👤 Organizer', value: activity.creatorName },
-          ].map(item => (
-            <div key={item.label} className="detail-item">
-              <span className="detail-label">{item.label}</span>
-              <span className="detail-value">{item.value}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Description */}
-        {activity.description && (
-          <div style={{ marginBottom: 20 }}>
-            <div className="detail-label" style={{ marginBottom: 6 }}>About this Activity</div>
-            <p style={{ color: 'var(--gray-700)', lineHeight: 1.7, fontSize: '14px' }}>{activity.description}</p>
-          </div>
-        )}
-
-        {/* Capacity */}
-        <div style={{ marginBottom: 20 }}>
-          <div className="flex-between" style={{ marginBottom: 6 }}>
-            <span className="detail-label">Capacity</span>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: pct >= 100 ? 'var(--danger)' : 'var(--gray-600)' }}>
-              {activity.registeredCount} / {activity.maxCapacity} spots · {pct}% filled
+        <div style={{ position: 'relative' }}>
+          {/* Status + organizer */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <span style={{
+              background: theme.badge, color: theme.badgeText,
+              fontSize: 11, fontWeight: 800, textTransform: 'uppercase',
+              letterSpacing: '0.06em', padding: '3px 10px', borderRadius: 999,
+            }}>
+              {theme.label}
+            </span>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+              Organised by {activity.creatorName}
             </span>
           </div>
-          <div className="cap-bar" style={{ height: 8 }}>
-            <div className={`cap-bar-fill${pct >= 100 ? ' full' : ''}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+
+          {/* Title */}
+          <h1 style={{
+            fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em',
+            lineHeight: 1.15, color: '#fff', marginBottom: 20,
+            textShadow: '0 1px 8px rgba(0,0,0,0.2)',
+          }}>
+            {activity.title}
+          </h1>
+
+          {/* Meta row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+            {[
+              { icon: '📅', value: new Date(activity.date).toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) },
+              { icon: '🕐', value: activity.time || 'Time TBD' },
+              { icon: '📍', value: activity.location },
+            ].map(m => (
+              <div key={m.icon} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span style={{ fontSize: 14 }}>{m.icon}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>{m.value}</span>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Registration CTA */}
-        {user.role === 'member' && !isPast && (
-          <div style={{ paddingTop: 4 }}>
-            {isRegistered ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: 'var(--success-light)', borderRadius: 8 }}>
-                <span style={{ fontSize: '1.1rem' }}>✅</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: 'var(--success)', fontSize: '13px' }}>You're registered!</div>
-                  <div style={{ fontSize: '12px', color: '#047857' }}>See you there.</div>
-                </div>
-                <button className="btn btn-ghost btn-sm" onClick={handleUnregister}>Unregister</button>
-              </div>
-            ) : (
-              <button className="btn btn-primary btn-lg" onClick={handleRegister} disabled={isFull} style={{ width: '100%' }}>
-                {isFull ? '🚫 Activity is Full' : '✅ Register for this Activity'}
-              </button>
-            )}
-          </div>
-        )}
-        {user.role === 'member' && isPast && (
-          <div style={{ padding: '10px 16px', background: 'var(--gray-100)', borderRadius: 8, fontSize: '13px', color: 'var(--gray-500)', fontWeight: 500 }}>
-            This activity has already taken place.
-          </div>
-        )}
       </div>
 
-      {(user.role === 'executive' || user.role === 'advisor') && activity.participants?.length > 0 && (
-        <div className="card" style={{ padding: 0 }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--gray-200)', fontWeight: 600, fontSize: '14px' }}>
-            Registered Participants ({activity.participants.length})
+      {/* ── Main content ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, alignItems: 'start' }}>
+
+        {/* Left — description */}
+        <div className="card">
+          {activity.description ? (
+            <>
+              <div className="card-title">About this Activity</div>
+              <p style={{ color: 'var(--gray-700)', lineHeight: 1.75, fontSize: 14 }}>
+                {activity.description}
+              </p>
+            </>
+          ) : (
+            <p style={{ color: 'var(--gray-400)', fontSize: 14, fontStyle: 'italic' }}>
+              No description provided.
+            </p>
+          )}
+
+          {/* Member registration CTA */}
+          {user.role === 'member' && (
+            <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--gray-100)' }}>
+              {isPast ? (
+                <div style={{
+                  padding: '12px 16px', background: 'var(--gray-100)',
+                  borderRadius: 8, fontSize: 13, color: 'var(--gray-500)', fontWeight: 500,
+                }}>
+                  This activity has already taken place.
+                </div>
+              ) : isRegistered ? (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
+                  background: '#f0fdf4', borderRadius: 10, border: '1.5px solid #bbf7d0',
+                }}>
+                  <span style={{ fontSize: '1.3rem' }}>✅</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--success)', fontSize: 13 }}>You're registered!</div>
+                    <div style={{ fontSize: 12, color: '#047857', marginTop: 1 }}>See you there.</div>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={handleUnregister}>Unregister</button>
+                </div>
+              ) : (
+                <button
+                  className="btn btn-primary btn-lg"
+                  onClick={handleRegister}
+                  disabled={isFull}
+                  style={{ width: '100%' }}
+                >
+                  {isFull ? '🚫 Activity is Full' : '✅ Register for this Activity'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right — capacity + details */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Capacity card */}
+          <div className="card">
+            <div className="card-title">Capacity</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+              <span style={{ fontSize: '1.8rem', fontWeight: 900, letterSpacing: '-0.04em', color: pct >= 100 ? 'var(--danger)' : 'var(--primary)' }}>
+                {activity.registeredCount}
+              </span>
+              <span style={{ fontSize: 13, color: 'var(--gray-500)', fontWeight: 600 }}>
+                of {activity.maxCapacity}
+              </span>
+            </div>
+            <div className="cap-bar" style={{ height: 8, marginBottom: 6 }}>
+              <div className={`cap-bar-fill${pct >= 100 ? ' full' : ''}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--gray-500)', fontWeight: 600 }}>
+              {pct >= 100 ? 'No spots remaining' : `${activity.maxCapacity - activity.registeredCount} spots remaining`} · {pct}% filled
+            </div>
           </div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Registered At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {activity.participants.map(p => (
-                  <tr key={p.userId}>
-                    <td style={{ fontWeight: 500 }}>{p.name}</td>
-                    <td style={{ color: 'var(--gray-600)' }}>{p.email}</td>
-                    <td style={{ color: 'var(--gray-600)', fontSize: '12px' }}>
-                      {new Date(p.registeredAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          {/* Quick info card */}
+          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              { label: 'Date',      value: new Date(activity.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }) },
+              { label: 'Time',      value: activity.time || 'TBD' },
+              { label: 'Location',  value: activity.location },
+              { label: 'Organizer', value: activity.creatorName },
+            ].map(item => (
+              <div key={item.label} className="detail-item">
+                <span className="detail-label">{item.label}</span>
+                <span className="detail-value">{item.value}</span>
+              </div>
+            ))}
           </div>
         </div>
-      )}
+      </div>
 
-      {(user.role === 'executive' || user.role === 'advisor') && (!activity.participants || activity.participants.length === 0) && (
-        <div className="card">
-          <div className="empty" style={{ padding: '24px' }}>
-            <div className="empty-icon">👥</div>
-            <h3>No registrations yet</h3>
-            <p>Nobody has signed up for this activity.</p>
+      {/* ── Exec participant table ── */}
+      {(user.role === 'executive' || user.role === 'advisor') && (
+        <div className="card mt-4" style={{ padding: 0, marginTop: 20 }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--gray-100)', fontWeight: 700, fontSize: 14, color: 'var(--gray-900)' }}>
+            Registered Participants
+            <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 600, color: 'var(--gray-500)' }}>
+              ({activity.participants?.length ?? 0})
+            </span>
           </div>
+          {activity.participants?.length > 0 ? (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Name</th><th>Email</th><th>Registered</th></tr>
+                </thead>
+                <tbody>
+                  {activity.participants.map(p => (
+                    <tr key={p.userId}>
+                      <td style={{ fontWeight: 600 }}>{p.name}</td>
+                      <td style={{ color: 'var(--gray-500)' }}>{p.email}</td>
+                      <td style={{ color: 'var(--gray-500)', fontSize: 12 }}>
+                        {new Date(p.registeredAt).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty" style={{ padding: 32 }}>
+              <div className="empty-icon">👥</div>
+              <h3>No registrations yet</h3>
+              <p>Nobody has signed up for this activity.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

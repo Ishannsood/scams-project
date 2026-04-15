@@ -24,7 +24,27 @@ export default function MyRegistrations() {
   const upcoming = regs.filter(r => r.activity && new Date(r.activity.date) >= new Date());
   const past = regs.filter(r => r.activity && new Date(r.activity.date) < new Date());
 
-  if (loading) return <div className="loading">Loading your registrations…</div>;
+  if (loading) return (
+    <div className="page">
+      <div className="grid-3 mb-4">
+        {[1,2,3].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton skeleton-stat" />
+            <div className="skeleton skeleton-text" style={{ width: '60%' }} />
+          </div>
+        ))}
+      </div>
+      <div className="grid-2">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton skeleton-title" />
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton skeleton-text" style={{ width: '70%' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="page">
@@ -56,7 +76,10 @@ export default function MyRegistrations() {
         <div className="empty">
           <div className="empty-icon">📋</div>
           <h3>No registrations yet</h3>
-          <p>Browse Activities to sign up for events.</p>
+          <p>Browse available activities and sign up for ones you'd like to attend.</p>
+          <div style={{ marginTop: 20 }}>
+            <Link to="/activities" className="btn btn-primary">Browse Activities</Link>
+          </div>
         </div>
       ) : (
         <>

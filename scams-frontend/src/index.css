@@ -539,7 +539,7 @@ tfoot td {
 .empty p  { font-size: 13px; margin-top: 7px; color: var(--gray-500); line-height: 1.65; max-width: 320px; margin-inline: auto; }
 
 /* ─────────────────────────────────────────────
-   LOADING
+   LOADING SPINNER
 ───────────────────────────────────────────── */
 .loading {
   display: flex; align-items: center; justify-content: center;
@@ -550,6 +550,30 @@ tfoot td {
   border: 2px solid var(--gray-200); border-top-color: var(--primary);
   border-radius: 50%; animation: spin 0.6s linear infinite; flex-shrink: 0;
 }
+
+/* ─────────────────────────────────────────────
+   SKELETON SHIMMER
+───────────────────────────────────────────── */
+@keyframes skeletonShimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 1200px 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px; box-shadow: var(--shadow-sm);
+}
+.skeleton-text  { height: 12px; margin-bottom: 8px; }
+.skeleton-title { height: 20px; margin-bottom: 12px; width: 60%; }
+.skeleton-stat  { height: 40px; margin-bottom: 8px; width: 50%; }
+.skeleton-avatar { border-radius: 50%; flex-shrink: 0; }
 
 /* ─────────────────────────────────────────────
    UTILITIES

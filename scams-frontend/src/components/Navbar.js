@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
@@ -40,10 +40,10 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-right">
-        <div className="user-chip navbar-user-chip-desktop">
+        <Link to="/profile" className="user-chip navbar-user-chip-desktop" style={{ textDecoration: 'none' }}>
           <span className={`badge badge-${user?.role}`}>{user?.role}</span>
           <span>{user?.name}</span>
-        </div>
+        </Link>
         <button className="btn btn-ghost btn-sm navbar-logout-desktop" onClick={handleLogout} style={{ color: 'var(--gray-500)' }}>Sign out</button>
 
         {/* Hamburger */}

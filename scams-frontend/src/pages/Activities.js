@@ -65,7 +65,22 @@ export default function Activities() {
       return 0;
     });
 
-  if (loading) return <div className="loading">Loading activities…</div>;
+  if (loading) return (
+    <div className="page">
+      <div style={{ height: 40, width: 220, marginBottom: 24 }} className="skeleton" />
+      <div className="grid-2">
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton skeleton-title" />
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton skeleton-text" style={{ width: '75%' }} />
+            <div className="skeleton skeleton-text" style={{ width: '55%' }} />
+            <div style={{ marginTop: 12, height: 5 }} className="skeleton" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="page">

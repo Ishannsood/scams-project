@@ -40,7 +40,32 @@ export default function Dashboard() {
     load();
   }, [user.role]);
 
-  if (loading) return <div className="loading">Loading dashboard…</div>;
+  if (loading) return (
+    <div className="page">
+      {/* Hero skeleton */}
+      <div style={{ borderRadius: 22, height: 148, marginBottom: 32 }} className="skeleton" />
+      {/* Stat card skeletons */}
+      <div className="grid-4 mb-4">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton skeleton-stat" />
+            <div className="skeleton skeleton-text" style={{ width: '70%' }} />
+          </div>
+        ))}
+      </div>
+      {/* Content skeletons */}
+      <div className="grid-2">
+        {[1,2,3].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton skeleton-title" />
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton skeleton-text" style={{ width: '80%' }} />
+            <div className="skeleton skeleton-text" style={{ width: '60%' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const allUpcoming = activities.filter(a => new Date(a.date) >= new Date());
   const upcoming    = allUpcoming.slice(0, 3);
