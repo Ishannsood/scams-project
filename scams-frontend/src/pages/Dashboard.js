@@ -19,26 +19,47 @@ export default function Dashboard() {
   const [recentSignups, setRecentSignups]     = useState([]);
   const [latestAnnouncement, setLatestAnn]    = useState(null);
   const [loading, setLoading]                 = useState(true);
+  const [error, setError]                     = useState(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [acts, anns] = await Promise.all([api.getActivities(), api.getAnnouncements()]);
-        setActivities(acts);
-        setLatestAnn(anns[0] || null);
-        if (user.role === 'member') {
-          const regs = await api.getMyRegistrations();
-          setMyRegs(regs);
-        }
-        if (user.role === 'executive' || user.role === 'advisor') {
-          const [s, recent] = await Promise.all([api.getSummary(), api.getRecentSignups()]);
-          setSummary(s);
-          setRecentSignups(recent);
-        }
-      } finally { setLoading(false); }
-    };
-    load();
-  }, [user.role]);
+  const load = async () => {
+    setLoading(true); setError(null);
+    try {
+      const [acts, anns] = await Promise.all([api.getActivities(), api.getAnnouncements()]);
+      setActivities(acts);
+      setLatestAnn(anns[0] || null);
+      if (user.role === 'member') {
+        const regs = await api.getMyRegistrations();
+        setMyRegs(regs);
+      }
+      if (user.role === 'executive' || user.role === 'advisor') {
+        const [s, recent] = await Promise.all([api.getSummary(), api.getRecentSignups()]);
+        setSummary(s);
+        setRecentSignups(recent);
+      }
+    } catch (e) {
+      setError(e.message || 'Failed to load dashboard data.');
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); }, [user.role]);
+
+  if (error) return (
+    <div className="page">
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '80px 24px', textAlign: 'center', gap: 16,
+      }}>
+        <div style={{ fontSize: '2.5rem' }}>⚠️</div>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Could not load dashboard</h3>
+        <p style={{ fontSize: 13, color: 'var(--gray-500)', maxWidth: 340 }}>
+          {error.includes('token') || error.includes('auth') || error.includes('401')
+            ? 'Your session may have expired. Try signing out and back in.'
+            : 'The server may be waking up from sleep. This usually takes 30–60 seconds on the free tier.'}
+        </p>
+        <button className="btn btn-primary" onClick={load}>Retry</button>
+      </div>
+    </div>
+  );
 
   if (loading) return (
     <div className="page">

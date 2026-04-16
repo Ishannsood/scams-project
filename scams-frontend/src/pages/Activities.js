@@ -27,6 +27,7 @@ export default function Activities() {
   const [myRegIds,      setMyRegIds]      = useState(new Set());
   const [myWaitlistIds, setMyWaitlistIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState(searchParams.get('filter') === 'upcoming' ? 'upcoming' : 'all');
@@ -34,14 +35,18 @@ export default function Activities() {
   const [sort, setSort] = useState('date-asc');
 
   const load = async () => {
-    const acts = await api.getActivities();
-    setActivities(acts);
-    if (user.role === 'member') {
-      const [regs, wl] = await Promise.all([api.getMyRegistrations(), api.getMyWaitlist()]);
-      setMyRegIds(new Set(regs.map(r => r.activityId)));
-      setMyWaitlistIds(new Set(wl.map(w => w.activityId)));
-    }
-    setLoading(false);
+    setLoading(true); setError(null);
+    try {
+      const acts = await api.getActivities();
+      setActivities(acts);
+      if (user.role === 'member') {
+        const [regs, wl] = await Promise.all([api.getMyRegistrations(), api.getMyWaitlist()]);
+        setMyRegIds(new Set(regs.map(r => r.activityId)));
+        setMyWaitlistIds(new Set(wl.map(w => w.activityId)));
+      }
+    } catch (e) {
+      setError(e.message || 'Failed to load activities.');
+    } finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
@@ -86,6 +91,19 @@ export default function Activities() {
       if (sort === 'spots')     return (a.maxCapacity - a.registeredCount) - (b.maxCapacity - b.registeredCount) < 0 ? 1 : -1;
       return 0;
     });
+
+  if (error) return (
+    <div className="page">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', gap: 16 }}>
+        <div style={{ fontSize: '2.5rem' }}>⚠️</div>
+        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Could not load activities</h3>
+        <p style={{ fontSize: 13, color: 'var(--gray-500)', maxWidth: 340 }}>
+          The server may be waking up from sleep (30–60 seconds on the free tier). Please retry.
+        </p>
+        <button className="btn btn-primary" onClick={load}>Retry</button>
+      </div>
+    </div>
+  );
 
   if (loading) return (
     <div className="page">
