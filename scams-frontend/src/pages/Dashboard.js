@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api';
 
@@ -12,7 +12,8 @@ function timeAgo(dateStr) {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activities, setActivities]           = useState([]);
   const [myRegs, setMyRegs]                   = useState([]);
   const [summary, setSummary]                 = useState(null);
@@ -45,18 +46,16 @@ export default function Dashboard() {
 
   if (error) return (
     <div className="page">
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        padding: '80px 24px', textAlign: 'center', gap: 16,
-      }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', gap: 16 }}>
         <div style={{ fontSize: '2.5rem' }}>⚠️</div>
         <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Could not load dashboard</h3>
-        <p style={{ fontSize: 13, color: 'var(--gray-500)', maxWidth: 340 }}>
-          {error.includes('token') || error.includes('auth') || error.includes('401')
-            ? 'Your session may have expired. Try signing out and back in.'
-            : 'The server may be waking up from sleep. This usually takes 30–60 seconds on the free tier.'}
+        <p style={{ fontSize: 12, color: 'var(--gray-400)', fontFamily: 'monospace', background: 'var(--gray-100)', padding: '6px 12px', borderRadius: 6 }}>
+          {error}
         </p>
-        <button className="btn btn-primary" onClick={load}>Retry</button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="btn btn-primary" onClick={load}>Retry</button>
+          <button className="btn btn-ghost" onClick={() => { logout(); navigate('/login'); }}>Sign out &amp; re-login</button>
+        </div>
       </div>
     </div>
   );
