@@ -8,6 +8,10 @@ const headers = () => ({
 });
 
 const handle = async (res) => {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('COLD_START');
+  }
   const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) {

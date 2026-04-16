@@ -21,9 +21,10 @@ export default function Dashboard() {
   const [latestAnnouncement, setLatestAnn]    = useState(null);
   const [loading, setLoading]                 = useState(true);
   const [error, setError]                     = useState(null);
+  const [countdown, setCountdown]             = useState(0);
 
   const load = async () => {
-    setLoading(true); setError(null);
+    setLoading(true); setError(null); setCountdown(0);
     try {
       const [acts, anns] = await Promise.all([api.getActivities(), api.getAnnouncements()]);
       setActivities(acts);
@@ -39,6 +40,15 @@ export default function Dashboard() {
       }
     } catch (e) {
       setError(e.message || 'Failed to load dashboard data.');
+      if (e.message === 'COLD_START') {
+        let t = 55;
+        setCountdown(t);
+        const iv = setInterval(() => {
+          t -= 1;
+          setCountdown(t);
+          if (t <= 0) { clearInterval(iv); load(); }
+        }, 1000);
+      }
     } finally { setLoading(false); }
   };
 
@@ -47,15 +57,35 @@ export default function Dashboard() {
   if (error) return (
     <div className="page">
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center', gap: 16 }}>
-        <div style={{ fontSize: '2.5rem' }}>⚠️</div>
-        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Could not load dashboard</h3>
-        <p style={{ fontSize: 12, color: 'var(--gray-400)', fontFamily: 'monospace', background: 'var(--gray-100)', padding: '6px 12px', borderRadius: 6 }}>
-          {error}
-        </p>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button className="btn btn-primary" onClick={load}>Retry</button>
-          <button className="btn btn-ghost" onClick={() => { logout(); navigate('/login'); }}>Sign out &amp; re-login</button>
-        </div>
+        {error === 'COLD_START' ? (
+          <>
+            <div style={{ fontSize: '2.5rem' }}>⏳</div>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Server is waking up…</h3>
+            <p style={{ fontSize: 13, color: 'var(--gray-500)', maxWidth: 340 }}>
+              The free server spins down after inactivity. It'll be ready in about a minute.
+            </p>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              border: '4px solid var(--gray-200)', borderTopColor: 'var(--primary)',
+              animation: 'spin 1s linear infinite',
+            }} />
+            <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--primary)', letterSpacing: '-0.04em' }}>
+              {countdown}s
+            </p>
+            <p style={{ fontSize: 12, color: 'var(--gray-400)' }}>Retrying automatically…</p>
+            <button className="btn btn-ghost btn-sm" onClick={load}>Retry now</button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: '2.5rem' }}>⚠️</div>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-700)' }}>Could not load dashboard</h3>
+            <p style={{ fontSize: 12, color: 'var(--gray-400)', fontFamily: 'monospace', background: 'var(--gray-100)', padding: '6px 12px', borderRadius: 6 }}>{error}</p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-primary" onClick={load}>Retry</button>
+              <button className="btn btn-ghost" onClick={() => { logout(); navigate('/login'); }}>Sign out &amp; re-login</button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
