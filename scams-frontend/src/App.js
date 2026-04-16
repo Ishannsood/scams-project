@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { DarkModeProvider } from './context/DarkModeContext';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -106,12 +107,14 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
-      </BrowserRouter>
-    </AuthProvider>
+    <DarkModeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <ToastProvider>
+            <AppRoutes />
+          </ToastProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </DarkModeProvider>
   );
 }

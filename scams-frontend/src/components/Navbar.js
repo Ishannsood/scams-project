@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useDarkMode } from '../context/DarkModeContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { dark, toggle } = useDarkMode();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -44,6 +46,9 @@ export default function Navbar() {
           <span className={`badge badge-${user?.role}`}>{user?.role}</span>
           <span>{user?.name}</span>
         </Link>
+        <button className="dark-toggle" onClick={toggle} title={dark ? 'Switch to light mode' : 'Switch to dark mode'}>
+          {dark ? '☀️' : '🌙'}
+        </button>
         <button className="btn btn-ghost btn-sm navbar-logout-desktop" onClick={handleLogout} style={{ color: 'var(--gray-500)' }}>Sign out</button>
 
         {/* Hamburger */}
