@@ -30,13 +30,25 @@ export default function Reports() {
   const [summary, setSummary] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [countdown, setCountdown] = useState(0);
   const [tab, setTab] = useState(searchParams.get('tab') === 'members' ? 'members' : 'activities');
 
-  useEffect(() => {
-    Promise.all([api.getSummary(), api.getMembers()]).then(([s, m]) => {
-      setSummary(s); setMembers(m); setLoading(false);
-    });
-  }, []);
+  const load = async () => {
+    setLoading(true); setError(null); setCountdown(0);
+    try {
+      const [s, m] = await Promise.all([api.getSummary(), api.getMembers()]);
+      setSummary(s); setMembers(m);
+    } catch (e) {
+      setError(e.message || 'Failed to load.');
+      if (e.message === 'COLD_START') {
+        let t = 55; setCountdown(t);
+        const iv = setInterval(() => { t -= 1; setCountdown(t); if (t <= 0) { clearInterval(iv); load(); } }, 1000);
+      }
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); }, []);
 
   const exportActivitiesCSV = () => {
     const header = ['Activity', 'Date', 'Location', 'Capacity', 'Registered', 'Attended', 'Fill Rate', 'Attendance Rate'];
@@ -57,6 +69,31 @@ export default function Reports() {
     });
     downloadCSV('scams-member-report.csv', [header, ...rows]);
   };
+
+  if (error) return (
+    <div className="page">
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 24px', textAlign:'center', gap:16 }}>
+        {error === 'COLD_START' ? (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⏳</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Server is waking up…</h3>
+            <p style={{ fontSize:13, color:'var(--gray-500)', maxWidth:340 }}>The free server spins down after inactivity. It'll be ready in about a minute.</p>
+            <div style={{ width:64, height:64, borderRadius:'50%', border:'4px solid var(--gray-200)', borderTopColor:'var(--primary)', animation:'spin 1s linear infinite' }} />
+            <p style={{ fontSize:22, fontWeight:800, color:'var(--primary)', letterSpacing:'-0.04em' }}>{countdown}s</p>
+            <p style={{ fontSize:12, color:'var(--gray-400)' }}>Retrying automatically…</p>
+            <button className="btn btn-ghost btn-sm" onClick={load}>Retry now</button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⚠️</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Could not load reports</h3>
+            <p style={{ fontSize:12, color:'var(--gray-400)', fontFamily:'monospace', background:'var(--gray-100)', padding:'6px 12px', borderRadius:6 }}>{error}</p>
+            <button className="btn btn-primary" onClick={load}>Retry</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   if (loading) return <div className="loading">Loading reports…</div>;
 

@@ -17,6 +17,7 @@ export default function ActivityDetail() {
   const navigate   = useNavigate();
   const [activity, setActivity]     = useState(null);
   const [isRegistered, setIsReg]    = useState(false);
+  const [isWaiting,    setIsWaiting] = useState(false);
   const [loading, setLoading]       = useState(true);
 
   const load = async () => {
@@ -24,8 +25,9 @@ export default function ActivityDetail() {
       const act = await api.getActivity(id);
       setActivity(act);
       if (user.role === 'member') {
-        const regs = await api.getMyRegistrations();
+        const [regs, wl] = await Promise.all([api.getMyRegistrations(), api.getMyWaitlist()]);
         setIsReg(regs.some(r => r.activityId === id));
+        setIsWaiting(wl.some(w => w.activityId === id));
       }
     } catch { navigate('/activities'); }
     finally  { setLoading(false); }
@@ -37,8 +39,16 @@ export default function ActivityDetail() {
     try { await api.joinActivity(id);  toast('Registered successfully!');         load(); }
     catch (e) { toast(e.message, 'error'); }
   };
-  const handleUnregister = async () => {
+  const handleUnregister   = async () => {
     try { await api.unregister(id);    toast('Unregistered from activity.','info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
+  };
+  const handleJoinWaitlist = async () => {
+    try { await api.joinWaitlist(id);  toast('Added to waitlist!');                 load(); }
+    catch (e) { toast(e.message, 'error'); }
+  };
+  const handleLeaveWaitlist = async () => {
+    try { await api.leaveWaitlist(id); toast('Removed from waitlist.','info');       load(); }
     catch (e) { toast(e.message, 'error'); }
   };
 
@@ -147,6 +157,21 @@ export default function ActivityDetail() {
                 }}>
                   This activity has already taken place.
                 </div>
+              ) : isWaiting ? (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
+                  background: '#fffbeb', borderRadius: 10, border: '1.5px solid #fde68a',
+                }}>
+                  <span style={{ fontSize: '1.3rem' }}>⏳</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--warning)', fontSize: 13 }}>You're on the waitlist</div>
+                    <div style={{ fontSize: 12, color: '#92400e', marginTop: 1 }}>
+                      You'll be automatically registered if a spot opens up.
+                      {activity.waitlistCount > 1 && ` (${activity.waitlistCount} people waiting)`}
+                    </div>
+                  </div>
+                  <button className="btn btn-ghost btn-sm" onClick={handleLeaveWaitlist}>Leave</button>
+                </div>
               ) : isRegistered ? (
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
@@ -159,14 +184,16 @@ export default function ActivityDetail() {
                   </div>
                   <button className="btn btn-ghost btn-sm" onClick={handleUnregister}>Unregister</button>
                 </div>
+              ) : isFull ? (
+                <button className="btn btn-lg" onClick={handleJoinWaitlist} style={{
+                  width: '100%', background: 'var(--warning)', color: '#fff',
+                  boxShadow: '0 4px 14px rgba(217,119,6,0.3)',
+                }}>
+                  ⏳ Join Waitlist{activity.waitlistCount > 0 ? ` · ${activity.waitlistCount} waiting` : ''}
+                </button>
               ) : (
-                <button
-                  className="btn btn-primary btn-lg"
-                  onClick={handleRegister}
-                  disabled={isFull}
-                  style={{ width: '100%' }}
-                >
-                  {isFull ? '🚫 Activity is Full' : '✅ Register for this Activity'}
+                <button className="btn btn-primary btn-lg" onClick={handleRegister} style={{ width: '100%' }}>
+                  ✅ Register for this Activity
                 </button>
               )}
             </div>

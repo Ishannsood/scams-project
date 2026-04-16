@@ -5,13 +5,25 @@ import { api } from '../api';
 
 export default function MyRegistrations() {
   const toast = useToast();
-  const [regs, setRegs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [regs,     setRegs]     = useState([]);
+  const [waitlisted, setWaitlisted] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
+  const [countdown, setCountdown] = useState(0);
 
   const load = async () => {
-    const data = await api.getMyRegistrations();
-    setRegs(data);
-    setLoading(false);
+    setLoading(true); setError(null); setCountdown(0);
+    try {
+      const [data, wl] = await Promise.all([api.getMyRegistrations(), api.getMyWaitlist()]);
+      setRegs(data);
+      setWaitlisted(wl);
+    } catch (e) {
+      setError(e.message || 'Failed to load.');
+      if (e.message === 'COLD_START') {
+        let t = 55; setCountdown(t);
+        const iv = setInterval(() => { t -= 1; setCountdown(t); if (t <= 0) { clearInterval(iv); load(); } }, 1000);
+      }
+    } finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
@@ -21,8 +33,38 @@ export default function MyRegistrations() {
     catch (e) { toast(e.message, 'error'); }
   };
 
+  const handleLeaveWaitlist = async (activityId) => {
+    try { await api.leaveWaitlist(activityId); toast('Removed from waitlist.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
+  };
+
   const upcoming = regs.filter(r => r.activity && new Date(r.activity.date) >= new Date());
   const past = regs.filter(r => r.activity && new Date(r.activity.date) < new Date());
+
+  if (error) return (
+    <div className="page">
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 24px', textAlign:'center', gap:16 }}>
+        {error === 'COLD_START' ? (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⏳</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Server is waking up…</h3>
+            <p style={{ fontSize:13, color:'var(--gray-500)', maxWidth:340 }}>The free server spins down after inactivity. It'll be ready in about a minute.</p>
+            <div style={{ width:64, height:64, borderRadius:'50%', border:'4px solid var(--gray-200)', borderTopColor:'var(--primary)', animation:'spin 1s linear infinite' }} />
+            <p style={{ fontSize:22, fontWeight:800, color:'var(--primary)', letterSpacing:'-0.04em' }}>{countdown}s</p>
+            <p style={{ fontSize:12, color:'var(--gray-400)' }}>Retrying automatically…</p>
+            <button className="btn btn-ghost btn-sm" onClick={load}>Retry now</button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⚠️</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Could not load registrations</h3>
+            <p style={{ fontSize:12, color:'var(--gray-400)', fontFamily:'monospace', background:'var(--gray-100)', padding:'6px 12px', borderRadius:6 }}>{error}</p>
+            <button className="btn btn-primary" onClick={load}>Retry</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   if (loading) return (
     <div className="page">
@@ -58,6 +100,11 @@ export default function MyRegistrations() {
           <div className="stat-icon">🎫</div>
           <div className="stat-value">{regs.length}</div>
           <div className="stat-label">Total Registered</div>
+        </div>
+        <div className="stat-card stat-warning" style={{ display: waitlisted.length === 0 ? 'none' : undefined }}>
+          <div className="stat-icon">⏳</div>
+          <div className="stat-value">{waitlisted.length}</div>
+          <div className="stat-label">On Waitlist</div>
         </div>
         <div className="stat-card stat-success">
           <div className="stat-icon">🗓</div>
@@ -105,6 +152,35 @@ export default function MyRegistrations() {
                       <Link to={`/activities/${r.activityId}`} className="btn btn-outline btn-sm">Details</Link>
                       <button className="btn btn-ghost btn-sm" onClick={() => handleUnregister(r.activityId)}>
                         Unregister
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {waitlisted.length > 0 && (
+            <>
+              <div className="section-label">Waitlisted ({waitlisted.length})</div>
+              <div className="grid-2 mb-4">
+                {waitlisted.map(w => (
+                  <div className="activity-card" key={w.id} style={{ borderLeft: '4px solid var(--warning)' }}>
+                    <div className="flex-between">
+                      <h3>{w.activity?.title || 'Unknown Activity'}</h3>
+                      <span className="badge badge-warning">#{w.position} in queue</span>
+                    </div>
+                    <div className="meta">
+                      <span>📅 {w.activity ? new Date(w.activity.date).toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : '—'}</span>
+                      <span>📍 {w.activity?.location || '—'}</span>
+                    </div>
+                    <p style={{ fontSize: 12, color: 'var(--gray-500)' }}>
+                      You'll be automatically registered if a spot opens up.
+                    </p>
+                    <div className="actions">
+                      <Link to={`/activities/${w.activityId}`} className="btn btn-outline btn-sm">Details</Link>
+                      <button className="btn btn-ghost btn-sm" onClick={() => handleLeaveWaitlist(w.activityId)}>
+                        Leave Waitlist
                       </button>
                     </div>
                   </div>

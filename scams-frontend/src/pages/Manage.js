@@ -23,11 +23,21 @@ export default function Manage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null); // { id, title }
+  const [error, setError] = useState(null);
+  const [countdown, setCountdown] = useState(0);
 
   const load = async () => {
-    const data = await api.getActivities();
-    setActivities(data);
-    setLoading(false);
+    setLoading(true); setError(null); setCountdown(0);
+    try {
+      const data = await api.getActivities();
+      setActivities(data);
+    } catch (e) {
+      setError(e.message || 'Failed to load.');
+      if (e.message === 'COLD_START') {
+        let t = 55; setCountdown(t);
+        const iv = setInterval(() => { t -= 1; setCountdown(t); if (t <= 0) { clearInterval(iv); load(); } }, 1000);
+      }
+    } finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
@@ -58,6 +68,31 @@ export default function Manage() {
   };
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+
+  if (error) return (
+    <div className="page">
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 24px', textAlign:'center', gap:16 }}>
+        {error === 'COLD_START' ? (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⏳</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Server is waking up…</h3>
+            <p style={{ fontSize:13, color:'var(--gray-500)', maxWidth:340 }}>The free server spins down after inactivity. It'll be ready in about a minute.</p>
+            <div style={{ width:64, height:64, borderRadius:'50%', border:'4px solid var(--gray-200)', borderTopColor:'var(--primary)', animation:'spin 1s linear infinite' }} />
+            <p style={{ fontSize:22, fontWeight:800, color:'var(--primary)', letterSpacing:'-0.04em' }}>{countdown}s</p>
+            <p style={{ fontSize:12, color:'var(--gray-400)' }}>Retrying automatically…</p>
+            <button className="btn btn-ghost btn-sm" onClick={load}>Retry now</button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize:'2.5rem' }}>⚠️</div>
+            <h3 style={{ fontSize:'1rem', fontWeight:700, color:'var(--gray-700)' }}>Could not load activities</h3>
+            <p style={{ fontSize:12, color:'var(--gray-400)', fontFamily:'monospace', background:'var(--gray-100)', padding:'6px 12px', borderRadius:6 }}>{error}</p>
+            <button className="btn btn-primary" onClick={load}>Retry</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   if (loading) return <div className="loading">Loading activities…</div>;
 
