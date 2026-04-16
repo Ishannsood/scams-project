@@ -1,42 +1,37 @@
-const router = require('express').Router();
-const { users, registrations, attendance, activities } = require('../data/store');
+const router       = require('express').Router();
+const User         = require('../models/User');
+const Registration = require('../models/Registration');
+const Attendance   = require('../models/Attendance');
+const Activity     = require('../models/Activity');
 const { authenticate, authorize } = require('../middleware/auth');
 
-// GET /api/members — exec/advisor only
-router.get('/', authenticate, authorize('executive', 'advisor'), (req, res) => {
-  const result = users.map(u => {
-    const myRegs = registrations.filter(r => r.userId === u.id);
-    const myAttendance = attendance.filter(a => a.userId === u.id);
+router.get('/', authenticate, authorize('executive', 'advisor'), async (req, res) => {
+  try {
+    const [users, allRegs, allAtt, allActs] = await Promise.all([
+      User.find({}).lean(),
+      Registration.find({}).lean(),
+      Attendance.find({}).lean(),
+      Activity.find({}).lean(),
+    ]);
 
-    // Most recently registered activity
-    const lastReg = myRegs
-      .sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt))[0];
-    const lastActivity = lastReg
-      ? activities.find(a => a.id === lastReg.activityId)
-      : null;
+    const result = users.map(u => {
+      const myRegs = allRegs.filter(r => r.userId === u._id);
+      const myAtt  = allAtt.filter(a => a.userId === u._id);
+      const sorted = [...myRegs].sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
+      const lastAct = sorted[0] ? allActs.find(a => a._id === sorted[0].activityId) : null;
+      const attRate = myRegs.length > 0 ? Math.round((myAtt.length / myRegs.length) * 100) : 0;
+      const first   = [...myRegs].sort((a,b) => new Date(a.registeredAt)-new Date(b.registeredAt))[0];
+      return {
+        id: u._id, name: u.name, email: u.email, role: u.role,
+        activitiesRegistered: myRegs.length, activitiesAttended: myAtt.length,
+        attendanceRate: attRate, lastActivityTitle: lastAct?.title || null,
+        joinedAt: first?.registeredAt || null,
+      };
+    });
 
-    const attendanceRate = myRegs.length > 0
-      ? Math.round((myAttendance.length / myRegs.length) * 100)
-      : 0;
-
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      role: u.role,
-      activitiesRegistered: myRegs.length,
-      activitiesAttended: myAttendance.length,
-      attendanceRate,
-      lastActivityTitle: lastActivity?.title || null,
-      joinedAt: myRegs.length > 0
-        ? myRegs.sort((a, b) => new Date(a.registeredAt) - new Date(b.registeredAt))[0].registeredAt
-        : null,
-    };
-  });
-
-  // Sort: most active first
-  result.sort((a, b) => b.activitiesRegistered - a.activitiesRegistered);
-  res.json(result);
+    result.sort((a, b) => b.activitiesRegistered - a.activitiesRegistered);
+    res.json(result);
+  } catch (e) { res.status(500).json({ message: e.message }); }
 });
 
 module.exports = router;
