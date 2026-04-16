@@ -3,7 +3,16 @@ import { api } from '../api';
 import { useToast } from '../context/ToastContext';
 import ConfirmModal from '../components/ConfirmModal';
 
-const EMPTY_FORM = { title: '', description: '', date: '', time: '', location: '', maxCapacity: 30 };
+const CAT_COLOR = {
+  Workshop: { bg: '#ede9fe', text: '#5b21b6' },
+  Social:   { bg: '#fce7f3', text: '#9d174d' },
+  Career:   { bg: '#dbeafe', text: '#1e40af' },
+  Academic: { bg: '#d1fae5', text: '#065f46' },
+  General:  { bg: '#f1f5f9', text: '#475569' },
+};
+
+const CATEGORIES = ['General', 'Workshop', 'Social', 'Career', 'Academic'];
+const EMPTY_FORM = { title: '', description: '', date: '', time: '', location: '', maxCapacity: 30, category: 'General' };
 
 export default function Manage() {
   const toast = useToast();
@@ -26,7 +35,7 @@ export default function Manage() {
   const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setShowModal(true); };
   const openEdit = (a) => {
     setEditing(a.id);
-    setForm({ title: a.title, description: a.description, date: a.date, time: a.time, location: a.location, maxCapacity: a.maxCapacity });
+    setForm({ title: a.title, description: a.description, date: a.date, time: a.time, location: a.location, maxCapacity: a.maxCapacity, category: a.category || 'General' });
     setShowModal(true);
   };
   const closeModal = () => { setShowModal(false); setEditing(null); };
@@ -79,6 +88,7 @@ export default function Manage() {
               <thead>
                 <tr>
                   <th>Activity</th>
+                  <th>Category</th>
                   <th>Date & Time</th>
                   <th>Location</th>
                   <th>Fill</th>
@@ -100,6 +110,11 @@ export default function Manage() {
                             {a.description.slice(0, 55)}{a.description.length > 55 ? '…' : ''}
                           </div>
                         )}
+                      </td>
+                      <td>
+                        {(() => { const col = CAT_COLOR[a.category] || CAT_COLOR.General; return (
+                          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', background: col.bg, color: col.text }}>{a.category || 'General'}</span>
+                        ); })()}
                       </td>
                       <td>
                         <div style={{ fontWeight: 500 }}>{new Date(a.date).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
@@ -173,6 +188,12 @@ export default function Manage() {
                   <label>Max Capacity</label>
                   <input type="number" value={form.maxCapacity} onChange={set('maxCapacity')} min={1} max={500} />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Category</label>
+                <select value={form.category} onChange={set('category')}>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
                 <button type="button" className="btn btn-ghost" onClick={closeModal}>Cancel</button>

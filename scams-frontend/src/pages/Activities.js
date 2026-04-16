@@ -5,6 +5,14 @@ import { useToast } from '../context/ToastContext';
 import { api } from '../api';
 
 const FILTERS = ['all', 'upcoming', 'past'];
+const CATEGORIES = ['All', 'Workshop', 'Social', 'Career', 'Academic', 'General'];
+const CAT_COLOR = {
+  Workshop: { bg: '#ede9fe', text: '#5b21b6' },
+  Social:   { bg: '#fce7f3', text: '#9d174d' },
+  Career:   { bg: '#dbeafe', text: '#1e40af' },
+  Academic: { bg: '#d1fae5', text: '#065f46' },
+  General:  { bg: '#f1f5f9', text: '#475569' },
+};
 const SORTS = [
   { value: 'date-asc',   label: 'Date (Earliest)' },
   { value: 'date-desc',  label: 'Date (Latest)' },
@@ -16,19 +24,22 @@ export default function Activities() {
   const { user } = useAuth();
   const toast = useToast();
   const [activities, setActivities] = useState([]);
-  const [myRegIds, setMyRegIds] = useState(new Set());
+  const [myRegIds,      setMyRegIds]      = useState(new Set());
+  const [myWaitlistIds, setMyWaitlistIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState(searchParams.get('filter') === 'upcoming' ? 'upcoming' : 'all');
+  const [category, setCategory] = useState('All');
   const [sort, setSort] = useState('date-asc');
 
   const load = async () => {
     const acts = await api.getActivities();
     setActivities(acts);
     if (user.role === 'member') {
-      const regs = await api.getMyRegistrations();
+      const [regs, wl] = await Promise.all([api.getMyRegistrations(), api.getMyWaitlist()]);
       setMyRegIds(new Set(regs.map(r => r.activityId)));
+      setMyWaitlistIds(new Set(wl.map(w => w.activityId)));
     }
     setLoading(false);
   };
@@ -45,6 +56,16 @@ export default function Activities() {
     catch (e) { toast(e.message, 'error'); }
   };
 
+  const handleJoinWaitlist = async (id) => {
+    try { await api.joinWaitlist(id); toast('Added to waitlist!'); load(); }
+    catch (e) { toast(e.message, 'error'); }
+  };
+
+  const handleLeaveWaitlist = async (id) => {
+    try { await api.leaveWaitlist(id); toast('Removed from waitlist.', 'info'); load(); }
+    catch (e) { toast(e.message, 'error'); }
+  };
+
   const now = new Date();
 
   const filtered = activities
@@ -53,9 +74,10 @@ export default function Activities() {
         a.title.toLowerCase().includes(search.toLowerCase()) ||
         a.location.toLowerCase().includes(search.toLowerCase());
       const isPast = new Date(a.date) < now;
-      if (filter === 'upcoming') return matchesSearch && !isPast;
-      if (filter === 'past')     return matchesSearch && isPast;
-      return matchesSearch;
+      const matchesCat = category === 'All' || (a.category || 'General') === category;
+      if (filter === 'upcoming') return matchesSearch && matchesCat && !isPast;
+      if (filter === 'past')     return matchesSearch && matchesCat && isPast;
+      return matchesSearch && matchesCat;
     })
     .sort((a, b) => {
       if (sort === 'date-asc')  return new Date(a.date) - new Date(b.date);
@@ -116,6 +138,27 @@ export default function Activities() {
               </button>
             ))}
           </div>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            {CATEGORIES.map(c => {
+              const active = category === c;
+              const col = CAT_COLOR[c] || CAT_COLOR.General;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setCategory(c)}
+                  style={{
+                    padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                    cursor: 'pointer', border: `1.5px solid ${active ? col.text : 'var(--gray-200)'}`,
+                    background: active ? col.bg : '#fff',
+                    color: active ? col.text : 'var(--gray-500)',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {c}
+                </button>
+              );
+            })}
+          </div>
           <select
             value={sort}
             onChange={e => setSort(e.target.value)}
@@ -139,14 +182,20 @@ export default function Activities() {
       ) : (
         <div className="grid-2">
           {filtered.map(a => {
-            const isReg = myRegIds.has(a.id);
-            const pct = Math.round((a.registeredCount / a.maxCapacity) * 100);
-            const isFull = a.registeredCount >= a.maxCapacity;
-            const isPast = new Date(a.date) < now;
+            const isReg      = myRegIds.has(a.id);
+            const isWaiting  = myWaitlistIds.has(a.id);
+            const pct        = Math.round((a.registeredCount / a.maxCapacity) * 100);
+            const isFull     = a.registeredCount >= a.maxCapacity;
+            const isPast     = new Date(a.date) < now;
             return (
               <div className={`activity-card ${isPast ? 'status-past' : isFull ? 'status-full' : 'status-open'}`} key={a.id}>
                 <div className="flex-between" style={{ alignItems: 'flex-start' }}>
-                  <h3>{a.title}</h3>
+                  <div>
+                    {a.category && (() => { const col = CAT_COLOR[a.category] || CAT_COLOR.General; return (
+                      <span style={{ display: 'inline-block', marginBottom: 6, padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', background: col.bg, color: col.text }}>{a.category}</span>
+                    ); })()}
+                    <h3 style={{ margin: 0 }}>{a.title}</h3>
+                  </div>
                   {isPast
                     ? <span className="badge badge-warning">Past</span>
                     : isFull
@@ -175,9 +224,18 @@ export default function Activities() {
                         <span className="badge badge-success">✓ Registered</span>
                         <button className="btn btn-ghost btn-sm" onClick={() => handleUnregister(a.id)}>Unregister</button>
                       </>
+                    ) : isWaiting ? (
+                      <>
+                        <span className="badge badge-warning">⏳ On Waitlist</span>
+                        <button className="btn btn-ghost btn-sm" onClick={() => handleLeaveWaitlist(a.id)}>Leave Waitlist</button>
+                      </>
+                    ) : isFull ? (
+                      <button className="btn btn-outline btn-sm" style={{ borderColor: 'var(--warning)', color: 'var(--warning)' }} onClick={() => handleJoinWaitlist(a.id)}>
+                        + Join Waitlist {a.waitlistCount > 0 ? `(${a.waitlistCount} waiting)` : ''}
+                      </button>
                     ) : (
-                      <button className="btn btn-primary btn-sm" onClick={() => handleRegister(a.id)} disabled={isFull}>
-                        {isFull ? 'Full' : 'Register'}
+                      <button className="btn btn-primary btn-sm" onClick={() => handleRegister(a.id)}>
+                        Register
                       </button>
                     )
                   )}
