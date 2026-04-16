@@ -59,7 +59,7 @@ export default function Login() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {[
             { label: 'Member',    name: 'Alice Chen',    icon: '👤', email: 'member@test.com',  color: '#1d4ed8', bg: '#dbeafe' },
-            { label: 'Executive', name: 'Bob Nakamura',  icon: '⚙️', email: 'exec@test.com',    color: '#7c3aed', bg: '#f3e8ff' },
+            { label: 'Executive', name: 'Ishan Sood',  icon: '⚙️', email: 'exec@test.com',    color: '#7c3aed', bg: '#f3e8ff' },
             { label: 'Advisor',   name: 'Carol Vasquez', icon: '🎓', email: 'advisor@test.com', color: '#065f46', bg: '#d1fae5' },
           ].map(a => (
             <button
