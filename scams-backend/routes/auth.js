@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
   const token = jwt.sign(
     { id: user.id, name: user.name, email: user.email, role: user.role },
     SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '7d' }
   );
   res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
@@ -54,7 +54,7 @@ router.post('/login', async (req, res) => {
   const token = jwt.sign(
     { id: user.id, name: user.name, email: user.email, role: user.role },
     SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '7d' }
   );
   res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });
@@ -88,7 +88,7 @@ router.patch('/profile', authenticate, async (req, res) => {
 
   const token = jwt.sign(
     { id: user.id, name: user.name, email: user.email, role: user.role },
-    SECRET, { expiresIn: '24h' }
+    SECRET, { expiresIn: '7d' }
   );
   res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
 });

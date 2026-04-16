@@ -11,7 +11,14 @@ const headers = () => ({
 
 const handle = async (res) => {
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Something went wrong');
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('scams_token');
+      localStorage.removeItem('scams_user');
+      window.location.href = '/login';
+    }
+    throw new Error(data.message || 'Something went wrong');
+  }
   return data;
 };
 
@@ -29,10 +36,13 @@ export const api = {
   deleteActivity:   (id)       => fetch(`${BASE}/activities/${id}`,  { method: 'DELETE', headers: headers() }).then(handle),
 
   // Registrations
-  getMyRegistrations:  ()   => fetch(`${BASE}/registrations/my`,     { headers: headers() }).then(handle),
-  getRecentSignups:    ()   => fetch(`${BASE}/registrations/recent`,  { headers: headers() }).then(handle),
-  joinActivity:       (id) => fetch(`${BASE}/registrations/${id}`, { method: 'POST',   headers: headers() }).then(handle),
-  unregister:         (id) => fetch(`${BASE}/registrations/${id}`, { method: 'DELETE', headers: headers() }).then(handle),
+  getMyRegistrations:  ()   => fetch(`${BASE}/registrations/my`,              { headers: headers() }).then(handle),
+  getRecentSignups:    ()   => fetch(`${BASE}/registrations/recent`,           { headers: headers() }).then(handle),
+  getMyWaitlist:       ()   => fetch(`${BASE}/registrations/waitlist/my`,      { headers: headers() }).then(handle),
+  joinActivity:       (id) => fetch(`${BASE}/registrations/${id}`,            { method: 'POST',   headers: headers() }).then(handle),
+  unregister:         (id) => fetch(`${BASE}/registrations/${id}`,            { method: 'DELETE', headers: headers() }).then(handle),
+  joinWaitlist:       (id) => fetch(`${BASE}/registrations/${id}/waitlist`,   { method: 'POST',   headers: headers() }).then(handle),
+  leaveWaitlist:      (id) => fetch(`${BASE}/registrations/${id}/waitlist`,   { method: 'DELETE', headers: headers() }).then(handle),
 
   // Attendance
   getAttendance:  (actId)       => fetch(`${BASE}/attendance/${actId}`,      { headers: headers() }).then(handle),
