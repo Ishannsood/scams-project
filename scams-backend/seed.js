@@ -9,7 +9,7 @@ const PW = '$2b$10$mo7EzPazO4ygb.rQPEKuuu7K5pPw74PTiTp2fbfGsTrB3QX8GX1lm'; // pa
 
 const USERS = [
   { _id:'u1',  name:'Alice Chen',       email:'member@test.com',   password:PW, role:'member'    },
-  { _id:'u2',  name:'Bob Nakamura',     email:'exec@test.com',     password:PW, role:'executive' },
+  { _id:'u2',  name:'Ishan Sood',        email:'exec@test.com',     password:PW, role:'executive' },
   { _id:'u3',  name:'Carol Vasquez',    email:'advisor@test.com',  password:PW, role:'advisor'   },
   { _id:'u4',  name:'Dan Okafor',       email:'dan@test.com',      password:PW, role:'member'    },
   { _id:'u5',  name:'Emma Kowalski',    email:'emma@test.com',     password:PW, role:'member'    },
