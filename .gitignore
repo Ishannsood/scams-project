@@ -28,3 +28,8 @@ Thumbs.db
 .vscode/
 *.swp
 
+# Python utility scripts
+make_ppt.py
+__pycache__/
+*.pyc
+
